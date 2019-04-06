@@ -4,7 +4,6 @@ import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.CONFLICT;
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
-import static microgram.api.java.Result.ErrorCode.NOT_IMPLEMENTED;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,8 +36,19 @@ public class JavaPosts implements Posts {
 
 	@Override
 	public Result<Void> deletePost(String postId) {
-		return Result.error(ErrorCode.NOT_IMPLEMENTED);
+		Post post = posts.get(postId);
+		
+		if (post != null) {
+			likes.remove(postId);
+			Set<String> postsUser = userPosts.get(post.getOwnerId());
+			postsUser.remove(postId);
+			posts.remove(postId);
+			return ok();
+		}
+		else
+			return error(NOT_FOUND);
 	}
+
 
 	@Override
 	public Result<String> createPost(Post post) {
@@ -60,7 +70,7 @@ public class JavaPosts implements Posts {
 
 	@Override
 	public Result<Void> like(String postId, String userId, boolean isLiked) {
-		
+
 		Set<String> res = likes.get(postId);
 		if (res == null)
 			return error( NOT_FOUND );
@@ -80,7 +90,7 @@ public class JavaPosts implements Posts {
 	@Override
 	public Result<Boolean> isLiked(String postId, String userId) {
 		Set<String> res = likes.get(postId);
-		
+
 		if (res != null)
 			return ok(res.contains(userId));
 		else
@@ -95,10 +105,20 @@ public class JavaPosts implements Posts {
 		else
 			return error( NOT_FOUND );
 	}
-	
-	
+
+
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		return error(NOT_IMPLEMENTED);
+		Set<String> postsUser =  userPosts.get(userId);
+		
+		if(postsUser != null) {
+			List<String> returnPosts = new ArrayList<>(postsUser);
+			return ok(returnPosts);
+		}
+		
+		else {
+			return error(NOT_FOUND);
+		}
 	}
+
 }

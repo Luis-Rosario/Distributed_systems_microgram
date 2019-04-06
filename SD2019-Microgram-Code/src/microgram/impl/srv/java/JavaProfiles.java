@@ -22,8 +22,8 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	protected Map<String, Profile> users = new HashMap<>();
 	protected Map<String, Set<String>> followers = new HashMap<>();
 	protected Map<String, Set<String>> following = new HashMap<>();
-	
-	
+
+
 	@Override
 	public Result<Profile> getProfile(String userId) {
 		Profile res = users.get( userId );
@@ -40,17 +40,37 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		Profile res = users.putIfAbsent( profile.getUserId(), profile );
 		if( res != null ) 
 			return error(CONFLICT);
-		
+
 		followers.put( profile.getUserId(), new HashSet<>());
 		following.put( profile.getUserId(), new HashSet<>());
 		return ok();
 	}
-	
+
 	@Override
 	public Result<Void> deleteProfile(String userId) {
-		return Result.error(ErrorCode.NOT_IMPLEMENTED);
+		Profile profileToDelete = users.remove(userId);
+		
+		if(profileToDelete != null) {
+
+			Set<String> profileFollows = following.remove(userId);
+			Set<String> profileFollowers = followers.remove(userId);
+
+			for(String a:profileFollows) {
+				followers.get(a).remove(userId);
+			}
+
+			for(String a:profileFollowers) {
+				following.get(a).remove(userId);
+			}
+
+			return ok();
+		}
+		
+		else {
+			return error(NOT_FOUND);
+		}
 	}
-	
+
 	@Override
 	public Result<List<Profile>> search(String prefix) {
 		return ok(users.values().stream()
@@ -62,10 +82,10 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {		
 		Set<String> s1 = following.get( userId1 );
 		Set<String> s2 = followers.get( userId2 );
-		
+
 		if( s1 == null || s2 == null)
 			return error(NOT_FOUND);
-		
+
 		if( isFollowing ) {
 			boolean added1 = s1.add(userId2 ), added2 = s2.add( userId1 );
 			if( ! added1 || ! added2 )
@@ -83,7 +103,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 		Set<String> s1 = following.get( userId1 );
 		Set<String> s2 = followers.get( userId2 );
-		
+
 		if( s1 == null || s2 == null)
 			return error(NOT_FOUND);
 		else
