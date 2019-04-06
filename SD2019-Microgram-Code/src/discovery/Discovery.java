@@ -24,6 +24,7 @@ public class Discovery {
 
 	/**
 	 * 
+	 * ASasASasa
 	 * Announces periodically a service in a separate thread .
 	 * 
 	 * @param serviceName the name of the service being announced.
