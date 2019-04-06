@@ -106,7 +106,7 @@ public class JavaPosts implements Posts {
 			return error( NOT_FOUND );
 	}
 
-
+	// nao esquecer de mudar
 	@Override
 	public Result<List<String>> getFeed(String userId) {
 		Set<String> postsUser =  userPosts.get(userId);

@@ -8,7 +8,6 @@ import microgram.api.java.Posts;
 import microgram.api.rest.RestPosts;
 import microgram.impl.srv.java.JavaPosts;
 
-// Make this class concrete.
 public class _TODO_RestPostsResources extends RestResource implements RestPosts {
 
 	final Posts impl;
@@ -44,13 +43,12 @@ public class _TODO_RestPostsResources extends RestResource implements RestPosts 
 
 	@Override
 	public List<String> getPosts(String userId) {
-		return super.resultOrThrow(impl.getPosts(postId, userId));
+		return super.resultOrThrow(impl.getPosts(userId));
 	}
 
 	@Override
 	public List<String> getFeed(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.resultOrThrow(impl.getFeed(userId));
 	}
 
 }

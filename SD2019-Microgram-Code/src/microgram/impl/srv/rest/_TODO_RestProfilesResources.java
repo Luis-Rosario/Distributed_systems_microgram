@@ -9,7 +9,6 @@ import microgram.api.java.Profiles;
 import microgram.api.rest.RestProfiles;
 import microgram.impl.srv.java.JavaProfiles;
 
-//Make this class concrete.
 public class _TODO_RestProfilesResources extends RestResource implements RestProfiles {
 
 	final Profiles impl;
@@ -25,25 +24,22 @@ public class _TODO_RestProfilesResources extends RestResource implements RestPro
 
 	@Override
 	public void createProfile(Profile profile) {
-		// TODO Auto-generated method stub
-		
+	  super.resultOrThrow( impl.createProfile(profile));		
 	}
 
 	@Override
 	public List<Profile> search(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.resultOrThrow( impl.search(name));
 	}
 
 	@Override
 	public void follow(String userId1, String userId2, boolean isFollowing) {
-		// TODO Auto-generated method stub
+	  super.resultOrThrow( impl.follow(userId1, userId2, isFollowing));
 		
 	}
 
 	@Override
 	public boolean isFollowing(String userId1, String userId2) {
-		// TODO Auto-generated method stub
-		return false;
+		return super.resultOrThrow( impl.isFollowing(userId1, userId2));
 	}	
 }
