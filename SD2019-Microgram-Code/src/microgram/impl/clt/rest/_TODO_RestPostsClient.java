@@ -13,11 +13,11 @@ import javax.ws.rs.core.Response.Status;
 
 import discovery.Discovery;
 import microgram.api.Post;
+import microgram.api.Profile;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
 import microgram.api.rest.RestPosts;
 
-//TODO Make this class concrete
 public class _TODO_RestPostsClient extends RestClient implements Posts {
 	
 	public static final String SERVICE = "Microgram-Posts";
@@ -42,42 +42,66 @@ public class _TODO_RestPostsClient extends RestClient implements Posts {
 
 	@Override
 	public Result<Post> getPost(String postId) {
-		// TODO Auto-generated method stub
-		return null;
+	 	Response  r = target.path(postId)
+				.request()
+				.accept(MediaType.APPLICATION_JSON)
+				.get(); 
+				
+				
+	  return super.responseContents(r, Status.OK, new GenericType<Post>() {});
 	}
 
 
 	@Override
 	public Result<Void> deletePost(String postId) {
-		// TODO Auto-generated method stub
-		return null;
+		Response  r = target.path(postId)
+							.request()
+							.delete() ;
+				
+		return super.responseContents(r, Status.OK, new GenericType<Void>() {}); // sera q result void e asssim ????
 	}
 
-
+	// como por os 3 argumentos num pedido rest ( postId , userId , isLiked)
 	@Override
 	public Result<Void> like(String postId, String userId, boolean isLiked) {
-		// TODO Auto-generated method stub
-		return null;
+		Response  r = target.path(postId)
+							.path(userId)
+							.request()
+							.put(Entity.entity(postId, MediaType.APPLICATION_JSON)) ;
+		
+		return super.responseContents(r, Status.OK, new GenericType<Void>() {});
 	}
 
-
+	// tirar a duvida anterior e depois alterar
 	@Override
 	public Result<Boolean> isLiked(String postId, String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		Response  r = target.path(postId)
+				.path(userId)
+				.request()
+				.get() ;
+		
+		
+		return super.responseContents(r, Status.OK, new GenericType<Boolean>() {});
 	}
 
 
 	@Override
 	public Result<List<String>> getPosts(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		Response  r = target.path(userId)
+				.request()
+				.accept(MediaType.APPLICATION_JSON)
+				.get(); 
+		
+		return super.responseContents(r, Status.OK, new GenericType<List<String>>() {});
 	}
 
-
+	// como e q o rest distingue estes dois ?=??????
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		Response  r = target.path(userId)
+				.request()
+				.accept(MediaType.APPLICATION_JSON)
+				.get(); 
+		return super.responseContents(r, Status.OK, new GenericType<List<String>>() {});
 	}
 }
