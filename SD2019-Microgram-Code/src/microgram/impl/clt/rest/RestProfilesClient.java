@@ -18,15 +18,15 @@ import microgram.api.java.Result;
 import microgram.api.rest.RestProfiles;
 
 
-public class _TODO_RestProfilesClient extends RestClient implements Profiles {
+public class RestProfilesClient extends RestClient implements Profiles {
 
 	public static final String SERVICE = "Microgram-Profiles";
 
-	public _TODO_RestProfilesClient() throws IOException, URISyntaxException {
+	public RestProfilesClient() throws IOException, URISyntaxException {
 		this(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
 	}
 
-	public _TODO_RestProfilesClient(URI serverUri) {
+	public RestProfilesClient(URI serverUri) {
 		super(serverUri, RestProfiles.PATH);
 	}
 

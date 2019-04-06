@@ -6,11 +6,11 @@ import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
 
-public class _TODO_RetryPostsClient extends RetryClient implements Posts {
+public class RetryPostsClient extends RetryClient implements Posts {
 
 	final Posts impl;
 	
-	public _TODO_RetryPostsClient( Posts impl ) {
+	public RetryPostsClient( Posts impl ) {
 		this.impl = impl;
 	}
 

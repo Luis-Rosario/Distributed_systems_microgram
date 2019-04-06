@@ -109,6 +109,9 @@ public class JavaPosts implements Posts {
 	// nao esquecer de mudar
 	@Override
 	public Result<List<String>> getFeed(String userId) {
+		//uma instancia cliente de profiles 
+		
+		
 		Set<String> postsUser =  userPosts.get(userId);
 		
 		if(postsUser != null) {

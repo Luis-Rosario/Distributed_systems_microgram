@@ -8,11 +8,11 @@ import microgram.api.java.Posts;
 import microgram.api.rest.RestPosts;
 import microgram.impl.srv.java.JavaPosts;
 
-public class _TODO_RestPostsResources extends RestResource implements RestPosts {
+public class RestPostsResources extends RestResource implements RestPosts {
 
 	final Posts impl;
 
-	public _TODO_RestPostsResources(URI serverUri) {
+	public RestPostsResources(URI serverUri) {
 		this.impl = new JavaPosts();
 	}
 

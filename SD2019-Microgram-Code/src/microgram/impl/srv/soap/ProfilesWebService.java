@@ -10,11 +10,11 @@ import microgram.api.soap.SoapProfiles;
 import microgram.impl.srv.java.JavaProfiles;
 
 //Make this class concrete.
-public class _TODO_ProfilesWebService extends SoapService implements SoapProfiles {
+public class ProfilesWebService extends SoapService implements SoapProfiles {
 
 	final Profiles impl;
 	
-	protected _TODO_ProfilesWebService() {
+	protected ProfilesWebService() {
 		this.impl = new JavaProfiles();
 	}
 	

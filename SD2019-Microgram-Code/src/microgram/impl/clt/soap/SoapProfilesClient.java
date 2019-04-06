@@ -11,14 +11,14 @@ import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 
 
-public class _TODO_SoapProfilesClient extends SoapClient implements Profiles {
+public class SoapProfilesClient extends SoapClient implements Profiles {
 	public static final String SERVICE = "Microgram-Profiles";
 
-    public _TODO_SoapProfilesClient() throws IOException, URISyntaxException {
+    public SoapProfilesClient() throws IOException, URISyntaxException {
         this(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
     }
 
-	public _TODO_SoapProfilesClient(URI serverUri) {
+	public SoapProfilesClient(URI serverUri) {
 		super(serverUri);
 	}
 

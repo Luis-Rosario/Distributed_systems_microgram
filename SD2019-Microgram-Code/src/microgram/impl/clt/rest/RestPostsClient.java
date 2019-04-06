@@ -18,15 +18,15 @@ import microgram.api.java.Posts;
 import microgram.api.java.Result;
 import microgram.api.rest.RestPosts;
 
-public class _TODO_RestPostsClient extends RestClient implements Posts {
+public class RestPostsClient extends RestClient implements Posts {
 	
 	public static final String SERVICE = "Microgram-Posts";
 
-    public _TODO_RestPostsClient() throws IOException, URISyntaxException {
+    public RestPostsClient() throws IOException, URISyntaxException {
         this(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
     }
 
-	public _TODO_RestPostsClient(URI serverUri) {
+	public RestPostsClient(URI serverUri) {
 		super(serverUri, RestPosts.PATH);
 	}
 

@@ -12,17 +12,17 @@ import microgram.api.soap.MicrogramException;
 import microgram.api.soap.SoapPosts;
 import microgram.impl.clt.soap.SoapClient;
 
-public class _TODO_SoapPostsClient
+public class SoapPostsClient
 extends SoapClient
 implements Posts {
     public static final String SERVICE = "Microgram-Posts";
     SoapPosts impl;
 
-    public _TODO_SoapPostsClient() throws IOException, URISyntaxException {
+    public SoapPostsClient() throws IOException, URISyntaxException {
         this(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
     }
 
-    public _TODO_SoapPostsClient(URI serverUri) {
+    public SoapPostsClient(URI serverUri) {
         super(serverUri);
     }
 
