@@ -33,9 +33,9 @@ public class RestProfilesClient extends RestClient implements Profiles {
 	@Override
 	public Result<Profile> getProfile(String userId) {
 		Response r = target.path(userId)
-				.request()
-				.accept(MediaType.APPLICATION_JSON)
-				.get();
+							.request()
+							.accept(MediaType.APPLICATION_JSON)
+							.get();
 
 		return super.responseContents(r, Status.OK, new GenericType<Profile>() {});
 	}
@@ -46,7 +46,7 @@ public class RestProfilesClient extends RestClient implements Profiles {
 				.request()
 				.post( Entity.entity( profile, MediaType.APPLICATION_JSON));
 		
-		return super.responseContents(r, Status.OK, new GenericType<Void>(){});	
+		return super.verifyResponse(r, Status.OK);	
 	}
 
 	@Override
@@ -55,31 +55,43 @@ public class RestProfilesClient extends RestClient implements Profiles {
 				.request()
 				.delete() ;
 	
-		return super.responseContents(r, Status.OK, new GenericType<Void>() {});
+		return super.verifyResponse(r, Status.OK);
 	}
 
 	@Override
 	public Result<List<Profile>> search(String prefix) {
-		Response  r = target.path(prefix)
-				.request()
-				.accept(MediaType.APPLICATION_JSON)
-				.get(); 
+		Response  r = target.queryParam("query", prefix)
+							.request()
+							.accept(MediaType.APPLICATION_JSON)
+							.get(); 
 		
 		return super.responseContents(r, Status.OK, new GenericType<List<Profile>>() {});
 	}
 
 	
-	// preencher depois de tirar a duvida ao prof de RestPostClient
 	@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
-		// TODO Auto-generated method stub
-		return null;
+		Response  r = target.path(userId1)
+							.path("following")
+							.path(userId2)
+							.request()
+							.accept(MediaType.APPLICATION_JSON)
+							.put(Entity.entity(isFollowing, MediaType.APPLICATION_JSON)); 
+		
+		return super.verifyResponse(r, Status.OK);	
 	}
+	
 
 	@Override
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
-		// TODO Auto-generated method stub
-		return null;
+		Response  r = target.path(userId1)
+							.path("following")
+							.path(userId2)
+							.request()
+							.accept(MediaType.APPLICATION_JSON)
+							.get(); 		
+		
+		return super.responseContents(r, Status.OK, new GenericType<Boolean>() {});
 	}
 
 

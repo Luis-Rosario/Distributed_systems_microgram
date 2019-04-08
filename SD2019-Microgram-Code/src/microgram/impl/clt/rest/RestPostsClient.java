@@ -43,9 +43,9 @@ public class RestPostsClient extends RestClient implements Posts {
 	@Override
 	public Result<Post> getPost(String postId) {
 	 	Response  r = target.path(postId)
-				.request()
-				.accept(MediaType.APPLICATION_JSON)
-				.get(); 
+	 						.request()
+	 						.accept(MediaType.APPLICATION_JSON) 
+	 						.get(); 
 				
 				
 	  return super.responseContents(r, Status.OK, new GenericType<Post>() {});
@@ -58,27 +58,27 @@ public class RestPostsClient extends RestClient implements Posts {
 							.request()
 							.delete() ;
 				
-		return super.responseContents(r, Status.OK, new GenericType<Void>() {}); // sera q result void e asssim ????
+		return super.verifyResponse(r, Status.OK);
 	}
 
-	// como por os 3 argumentos num pedido rest ( postId , userId , isLiked)
 	@Override
 	public Result<Void> like(String postId, String userId, boolean isLiked) {
-		Response  r = target.path(postId)
+		Response  r = target.path( postId )
+							.path("likes")
 							.path(userId)
 							.request()
-							.put(Entity.entity(postId, MediaType.APPLICATION_JSON)) ;
+							.put(Entity.entity(isLiked, MediaType.APPLICATION_JSON)) ; 
 		
-		return super.responseContents(r, Status.OK, new GenericType<Void>() {});
+		return super.verifyResponse(r, Status.OK);
 	}
 
-	// tirar a duvida anterior e depois alterar
 	@Override
 	public Result<Boolean> isLiked(String postId, String userId) {
 		Response  r = target.path(postId)
-				.path(userId)
-				.request()
-				.get() ;
+							.path("likes")
+							.path(userId)
+							.request()
+							.get();
 		
 		
 		return super.responseContents(r, Status.OK, new GenericType<Boolean>() {});
@@ -87,21 +87,23 @@ public class RestPostsClient extends RestClient implements Posts {
 
 	@Override
 	public Result<List<String>> getPosts(String userId) {
-		Response  r = target.path(userId)
-				.request()
-				.accept(MediaType.APPLICATION_JSON)
-				.get(); 
+		Response  r = target.path("from")
+							.path(userId)
+							.request()
+							.accept(MediaType.APPLICATION_JSON)
+							.get(); 
 		
 		return super.responseContents(r, Status.OK, new GenericType<List<String>>() {});
 	}
 
-	// como e q o rest distingue estes dois ?=??????
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		Response  r = target.path(userId)
-				.request()
-				.accept(MediaType.APPLICATION_JSON)
-				.get(); 
+		Response  r = target.path("feed") 
+							.path(userId)
+							.request()
+							.accept(MediaType.APPLICATION_JSON)
+							.get(); 
+		
 		return super.responseContents(r, Status.OK, new GenericType<List<String>>() {});
 	}
 }

@@ -46,6 +46,8 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		return ok();
 	}
 
+	
+	// falta ir dar delete aos post deste profile
 	@Override
 	public Result<Void> deleteProfile(String userId) {
 		Profile profileToDelete = users.remove(userId);
