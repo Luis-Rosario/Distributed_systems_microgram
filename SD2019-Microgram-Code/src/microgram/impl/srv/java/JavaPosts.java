@@ -140,7 +140,7 @@ public class JavaPosts implements Posts {
 				}
 				
 				else {
-					return error(NOT_FOUND);
+					return error(NOT_FOUND);   
 				}
 			} catch (IOException e) {
 				return error( NOT_FOUND );
