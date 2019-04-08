@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Set;
 
 import discovery.Discovery;
 import microgram.api.Profile;
@@ -53,6 +54,12 @@ public class SoapProfilesClient extends SoapClient implements Profiles {
 
 	@Override
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Result<Set<String>> getfollowing(String userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

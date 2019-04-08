@@ -5,6 +5,8 @@ import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.CONFLICT;
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,17 +15,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import discovery.Discovery;
 import microgram.api.Post;
 import microgram.api.java.Posts;
+import microgram.api.java.Profiles;
 import microgram.api.java.Result;
-import microgram.api.java.Result.ErrorCode;
+import microgram.impl.clt.rest.RestProfilesClient;
 import utils.Hash;
 
 public class JavaPosts implements Posts {
+	private static String SERVICE = "Microgram-Profiles";
 
 	protected Map<String, Post> posts = new HashMap<>();
 	protected Map<String, Set<String>> likes = new HashMap<>();
 	protected Map<String, Set<String>> userPosts = new HashMap<>();
+
+
 
 	@Override
 	public Result<Post> getPost(String postId) {
@@ -37,7 +44,7 @@ public class JavaPosts implements Posts {
 	@Override
 	public Result<Void> deletePost(String postId) {
 		Post post = posts.get(postId);
-		
+
 		if (post != null) {
 			likes.remove(postId);
 			Set<String> postsUser = userPosts.get(post.getOwnerId());
@@ -106,22 +113,43 @@ public class JavaPosts implements Posts {
 			return error( NOT_FOUND );
 	}
 
-	// nao esquecer de mudar
+	//pedir feedback
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		//uma instancia cliente de profiles 
-		
-		
-		Set<String> postsUser =  userPosts.get(userId);
-		
-		if(postsUser != null) {
-			List<String> returnPosts = new ArrayList<>(postsUser);
-			return ok(returnPosts);
-		}
-		
-		else {
+
+		if(userPosts.get(userId) == null) {
 			return error(NOT_FOUND);
 		}
+		else {
+			try{
+				Profiles profileClient = new RestProfilesClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
+
+				Result<Set<String>> foll = profileClient.getfollowing(userId);
+				
+				if(foll.isOK()) {
+					Set<String> following = foll.value();
+					
+					List<String> feedPics = new ArrayList<>();
+					
+					for(String elem: following) {
+						for(String pic: userPosts.get(elem)) {
+							feedPics.add(pic);
+						}	
+					}
+					return ok(feedPics);
+				}
+				
+				else {
+					return error(NOT_FOUND);
+				}
+			} catch (IOException e) {
+				return error( NOT_FOUND );
+			} catch (URISyntaxException e) {
+				return error( NOT_FOUND );
+			}
+
+		}
+
 	}
 
 }
