@@ -4,6 +4,7 @@ import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.CONFLICT;
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
+import static microgram.api.java.Result.ErrorCode.INTERNAL_ERROR;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -113,14 +114,9 @@ public class JavaPosts implements Posts {
 			return error( NOT_FOUND );
 	}
 
-	//pedir feedback
+	//pedir feedback , (parece bem)
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-
-		if(userPosts.get(userId) == null) {
-			return error(NOT_FOUND);
-		}
-		else {
 			try{
 				Profiles profileClient = new RestProfilesClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
 
@@ -143,12 +139,12 @@ public class JavaPosts implements Posts {
 					return error(NOT_FOUND);   
 				}
 			} catch (IOException e) {
-				return error( NOT_FOUND );
+				return error( INTERNAL_ERROR );
 			} catch (URISyntaxException e) {
-				return error( NOT_FOUND );
+				return error( INTERNAL_ERROR );
 			}
 
-		}
+		
 
 	}
 

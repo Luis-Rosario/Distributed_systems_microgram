@@ -34,7 +34,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		res.setFollowing( following.get(userId).size() );
 		return ok(res);
 	}
-
+	 
 	@Override
 	public Result<Void> createProfile(Profile profile) {
 		Profile res = users.putIfAbsent( profile.getUserId(), profile );
