@@ -55,7 +55,7 @@ public class JavaMedia implements Media {
 	}
 
 	@Override
-	public Result<String> delete(String id) {
+	public Result<Void> delete(String id) {
 		try {
 			 File file = new File (ROOT_DIR + id + MEDIA_EXTENSION);
 			 if(!file.exists())
