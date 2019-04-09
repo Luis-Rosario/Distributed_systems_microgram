@@ -97,7 +97,7 @@ public class RestProfilesClient extends RestClient implements Profiles {
 
 	@Override 
 	public Result<Set<String>> getfollowing(String userId) {
-		Response  r = target.path("feed")
+		Response  r = target.path("following")
 							.path(userId)
 							.request()
 							.accept(MediaType.APPLICATION_JSON)
