@@ -31,6 +31,7 @@ public class JavaPosts implements Posts {
 	protected Map<String, Set<String>> likes = new HashMap<>();
 	protected Map<String, Set<String>> userPosts = new HashMap<>();
 
+	
 
 
 	@Override
@@ -43,6 +44,7 @@ public class JavaPosts implements Posts {
 	}
 
 	@Override
+	//eventualmente tratar de apagar do media storage com o kafka
 	public Result<Void> deletePost(String postId) {
 		Post post = posts.get(postId);
 
@@ -59,6 +61,7 @@ public class JavaPosts implements Posts {
 
 
 	@Override
+	//tenho de por no media storage com o kafka??
 	public Result<String> createPost(Post post) {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
 		if (posts.putIfAbsent(postId, post) == null) {
