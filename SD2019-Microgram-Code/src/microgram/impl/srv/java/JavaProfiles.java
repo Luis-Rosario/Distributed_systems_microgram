@@ -80,10 +80,12 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				.collect( Collectors.toList()));
 	}
 
-	@Override
+	@Override //updated follower/following count
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {		
 		Set<String> s1 = following.get( userId1 );
 		Set<String> s2 = followers.get( userId2 );
+		Profile u1 = users.get( userId1 );
+		Profile u2 = users.get( userId2 );
 
 		if( s1 == null || s2 == null)
 			return error(NOT_FOUND);
@@ -92,10 +94,14 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			boolean added1 = s1.add(userId2 ), added2 = s2.add( userId1 );
 			if( ! added1 || ! added2 )
 				return error(CONFLICT);		
+			u1.setFollowing(u1.getFollowing() - 1);
+			u2.setFollowers(u2.getFollowers() - 1);
 		} else {
 			boolean removed1 = s1.remove(userId2), removed2 = s2.remove( userId1);
 			if( ! removed1 || ! removed2 )
-				return error(NOT_FOUND);					
+				return error(NOT_FOUND);	
+			u1.setFollowing(u1.getFollowing() + 1);
+			u2.setFollowers(u2.getFollowers() + 1);
 		}
 		return ok();
 	}
