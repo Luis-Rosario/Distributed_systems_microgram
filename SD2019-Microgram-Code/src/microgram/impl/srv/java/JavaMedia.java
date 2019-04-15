@@ -17,7 +17,7 @@ public class JavaMedia implements Media {
 
 	private static final String MEDIA_EXTENSION = ".jpg";
 	private static final String ROOT_DIR = "/tmp/microgram/";
-	private static String SERVICE = "Microgram-Media";
+	private static String SERVICE = "Microgram-MediaStorage";
 
 	public JavaMedia() {
 		new File(ROOT_DIR).mkdirs();

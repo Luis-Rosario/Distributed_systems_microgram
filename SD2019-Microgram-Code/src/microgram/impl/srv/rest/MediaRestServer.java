@@ -1,6 +1,7 @@
 package microgram.impl.srv.rest;
 
 import java.net.URI;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
@@ -24,6 +25,8 @@ public class  MediaRestServer{
 
 	public static void main(String[] args) throws Exception {
 
+		Log.setLevel( Level.FINER );
+		
 		String ip = IP.hostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
 
