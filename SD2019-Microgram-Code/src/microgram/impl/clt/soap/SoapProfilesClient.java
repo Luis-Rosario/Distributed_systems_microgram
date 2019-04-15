@@ -10,10 +10,12 @@ import discovery.Discovery;
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
+import microgram.api.soap.SoapProfiles;
 
 
 public class SoapProfilesClient extends SoapClient implements Profiles {
 	public static final String SERVICE = "Microgram-Profiles";
+	SoapProfiles impl;
 
     public SoapProfilesClient() throws IOException, URISyntaxException {
         this(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
@@ -25,43 +27,41 @@ public class SoapProfilesClient extends SoapClient implements Profiles {
 
 	@Override
 	public Result<Profile> getProfile(String userId) {
-		return null;
+		  return super.tryCatchResult(() -> this.impl().getProfile(userId));
 	}
 
 	@Override
 	public Result<Void> createProfile(Profile profile) {
-		// TODO Auto-generated method stub
-		return null;
+		  return super.tryCatchVoid(() -> this.impl().createProfile(profile));
 	}
 
 	@Override
 	public Result<Void> deleteProfile(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		  return super.tryCatchVoid(() -> this.impl().deleteProfile(userId));
 	}
 
 	@Override
 	public Result<List<Profile>> search(String prefix) {
-		// TODO Auto-generated method stub
-		return null;
+		  return super.tryCatchResult(() -> this.impl().search(prefix));
 	}
 
 	@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
-		// TODO Auto-generated method stub
-		return null;
+		  return super.tryCatchVoid(() -> this.impl().follow(userId1,userId2, isFollowing));
 	}
 
 	@Override
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
-		// TODO Auto-generated method stub
-		return null;
+		  return super.tryCatchResult(() -> this.impl().isFollowing(userId1,userId2));
 	}
 
 	@Override
 	public Result<Set<String>> getfollowing(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		 return super.tryCatchResult(() -> this.impl().getfollowing(userId));
 	}
+	
+	private SoapProfiles impl() {
+        return this.impl;
+    }
 
 }

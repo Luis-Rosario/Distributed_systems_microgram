@@ -2,6 +2,7 @@ package microgram.impl.srv.soap;
 
 
 import java.util.List;
+import java.util.Set;
 
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
@@ -9,15 +10,15 @@ import microgram.api.soap.MicrogramException;
 import microgram.api.soap.SoapProfiles;
 import microgram.impl.srv.java.JavaProfiles;
 
-//Make this class concrete.
+
 public class ProfilesWebService extends SoapService implements SoapProfiles {
 
 	final Profiles impl;
-	
+
 	protected ProfilesWebService() {
 		this.impl = new JavaProfiles();
 	}
-	
+
 	@Override
 	public Profile getProfile( String userId ) throws MicrogramException {
 		return super.resultOrThrow( impl.getProfile(userId));
@@ -25,32 +26,35 @@ public class ProfilesWebService extends SoapService implements SoapProfiles {
 
 	@Override
 	public void createProfile(Profile profile) throws MicrogramException {
-		// TODO Auto-generated method stub
-		
+		super.resultOrThrow( impl.createProfile(profile)); 
+
 	}
 
 	@Override
 	public void deleteProfile(String userId) throws MicrogramException {
-		// TODO Auto-generated method stub
-		
+		super.resultOrThrow( impl.deleteProfile(userId)); 
+
 	}
 
 	@Override
 	public List<Profile> search(String prefix) throws MicrogramException {
-		// TODO Auto-generated method stub
-		return null;
+		return super.resultOrThrow( impl.search(prefix));
 	}
 
 	@Override
 	public void follow(String userId1, String userId2, boolean isFollowing) throws MicrogramException {
-		// TODO Auto-generated method stub
-		
+		super.resultOrThrow( impl.follow(userId1,userId2,isFollowing));
+
 	}
 
 	@Override
 	public boolean isFollowing(String userId1, String userId2) throws MicrogramException {
-		// TODO Auto-generated method stub
-		return false;
+		return super.resultOrThrow( impl.isFollowing(userId1,userId2));
 	}
-	
+
+	@Override
+	public Set<String> getfollowing(String userId) throws MicrogramException {
+		return super.resultOrThrow( impl.getfollowing(userId));
+	}
+
 }

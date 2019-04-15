@@ -8,7 +8,6 @@ import java.util.List;
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
-import microgram.api.soap.MicrogramException;
 import microgram.api.soap.SoapPosts;
 import microgram.impl.clt.soap.SoapClient;
 
@@ -30,31 +29,31 @@ implements Posts {
         return super.tryCatchResult(() -> this.impl().getPost(postId));
     }
 
-    private SoapPosts impl() {
-        return this.impl;
-    }
-
     public Result<String> createPost(Post post) {
-        return null;
+    	  return super.tryCatchResult(() -> this.impl().createPost(post));
     }
 
     public Result<Void> deletePost(String postId) {
-        return null;
+        return super.tryCatchVoid(() -> this.impl().deletePost(postId));
     }
 
     public Result<Void> like(String postId, String userId, boolean isLiked) {
-        return null;
+    	  return super.tryCatchVoid(() -> this.impl().like(postId, userId, isLiked));
     }
 
     public Result<Boolean> isLiked(String postId, String userId) {
-        return null;
+    	 return super.tryCatchResult(() -> this.impl().isLiked(postId, userId));
     }
 
     public Result<List<String>> getPosts(String userId) {
-        return null;
+    	 return super.tryCatchResult(() -> this.impl().getPosts(userId));
     }
 
     public Result<List<String>> getFeed(String userId) {
-        return null;
+    	 return super.tryCatchResult(() -> this.impl().getFeed(userId));
+    }
+    
+    private SoapPosts impl() {
+        return this.impl;
     }
 }
