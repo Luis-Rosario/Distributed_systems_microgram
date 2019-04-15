@@ -18,7 +18,7 @@ import microgram.api.rest.RestPosts;
 
 public class RestMediaClient extends RestClient implements Media {
 
-	public static final String SERVICE = "Microgram-Media";
+	public static final String SERVICE = "Microgram-MediaStorage";
 	
 
 	public RestMediaClient() throws IOException, URISyntaxException {
