@@ -41,7 +41,7 @@ public class RestMediaClient extends RestClient implements Media {
 
 	@Override
 	public Result<byte[]> download(String id) {
-		Response r = target.path(id)
+		Response r = client.target(id)
 				.request()
 				.accept(MediaType.APPLICATION_OCTET_STREAM)
 				.get();
@@ -51,9 +51,10 @@ public class RestMediaClient extends RestClient implements Media {
 
 	@Override
 	public Result<Void> delete(String id) {
-		Response r = target.path(id)
+		Response r = client.target(id)
 				.request()
 				.delete( );
+		
 		
 		return super.verifyResponse(r, Status.NO_CONTENT);	
 	}
