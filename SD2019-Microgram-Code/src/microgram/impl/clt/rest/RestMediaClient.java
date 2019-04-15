@@ -55,7 +55,7 @@ public class RestMediaClient extends RestClient implements Media {
 				.request()
 				.delete( );
 		
-		return super.verifyResponse(r, Status.OK);	
+		return super.verifyResponse(r, Status.NO_CONTENT);	
 	}
 
 }
