@@ -31,12 +31,13 @@ public class JavaPosts implements Posts {
 	protected Map<String, Set<String>> likes = new HashMap<>();
 	protected Map<String, Set<String>> userPosts = new HashMap<>();
 
+	Profiles profileClient = null;		//DIY Code
 	
-
 
 	@Override
 	public Result<Post> getPost(String postId) {
 		Post res = posts.get(postId);
+	
 		if (res != null)
 			return ok(res);
 		else
@@ -121,7 +122,8 @@ public class JavaPosts implements Posts {
 	@Override
 	public Result<List<String>> getFeed(String userId) {
 			try{
-				Profiles profileClient = new RestProfilesClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
+				if(profileClient == null)
+					profileClient = new RestProfilesClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
 
 				Result<Set<String>> foll = profileClient.getfollowing(userId);
 				
