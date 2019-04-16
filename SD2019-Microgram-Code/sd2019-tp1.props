@@ -1,7 +1,7 @@
 
 
 posts-rest-service-mainclass=microgram.impl.srv.rest.PostsRestServer
-posts-rest-service-port=7777
+posts-rest-service-port=6666
 
 profiles-rest-service-mainclass=microgram.impl.srv.rest.ProfilesRestServer
 profiles-rest-service-port=7777
@@ -10,7 +10,7 @@ mediastorage-rest-service-mainclass=microgram.impl.srv.rest.MediaRestServer
 mediastorage-rest-service-port=9999
 
 posts-soap-service-mainclass=microgram.impl.srv.soap.PostsSoapServer
-posts-soap-service-port=6666
+posts-soap-service-port=7777
 
 profiles-soap-service-mainclass=microgram.impl.srv.soap.ProfilesSoapServer
 profiles-soap-service-port=7777
