@@ -33,7 +33,6 @@ public interface RestMediaStorage {
 	
 	@DELETE
 	@Path("/{id}")
-	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	void delete(@PathParam("id") String id);
 }
 

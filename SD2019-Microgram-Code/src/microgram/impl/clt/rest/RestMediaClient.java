@@ -19,23 +19,23 @@ import microgram.api.rest.RestPosts;
 public class RestMediaClient extends RestClient implements Media {
 
 	public static final String SERVICE = "Microgram-MediaStorage";
-	
+
 
 	public RestMediaClient() throws IOException, URISyntaxException {
 		this(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
 	}
-	
+
 	public RestMediaClient(URI uri) {
 		super(uri, RestMediaStorage.PATH);
 	}
-	
+
 
 	@Override
 	public Result<String> upload(byte[] bytes) {
 		Response r = target
 				.request()
 				.post( Entity.entity( bytes, MediaType.APPLICATION_OCTET_STREAM));
-		
+
 		return super.responseContents(r, Status.OK, new GenericType<String>(){});	
 	}
 
@@ -45,7 +45,7 @@ public class RestMediaClient extends RestClient implements Media {
 				.request()
 				.accept(MediaType.APPLICATION_OCTET_STREAM)
 				.get();
-		
+
 		return super.responseContents(r, Status.OK, new GenericType<byte[]>(){});	
 	}
 
@@ -53,8 +53,8 @@ public class RestMediaClient extends RestClient implements Media {
 	public Result<Void> delete(String id) {
 		Response r = target.path(id)
 				.request()
-				.delete( );
-		
+				.delete();
+
 		return super.verifyResponse(r, Status.NO_CONTENT);	
 	}
 
