@@ -32,12 +32,14 @@ public class  MediaRestServer{
 
 		ResourceConfig config = new ResourceConfig();
 
-		config.register(new RestMediaResources(new URI(serverURI)));
+		config.register(new RestMediaResources(serverURI));
 
 		JdkHttpServerFactory.createHttpServer(URI.create(serverURI.replace(ip, "0.0.0.0")), config);
 
 		Log.info(String.format("%s Server ready @ %s\n", SERVICE, serverURI));
 		
 		Discovery.announce(SERVICE, serverURI);
+		
+
 	}
 }

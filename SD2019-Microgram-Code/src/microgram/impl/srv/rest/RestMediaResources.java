@@ -1,15 +1,19 @@
 package microgram.impl.srv.rest;
 
-import java.net.URI;
+import java.util.logging.Logger;
 
 import microgram.api.java.Media;
 import microgram.api.rest.RestMediaStorage;
 import microgram.impl.srv.java.JavaMedia;
 
 public class RestMediaResources extends RestResource implements RestMediaStorage {
-	final Media impl;
+	private static Logger Log = Logger.getLogger(RestMediaResources.class.getName());
 	
-	public RestMediaResources(URI serverUri) {
+	final Media impl;
+	final String baseUri;
+	
+	public RestMediaResources(String serverUri) {
+		this.baseUri = serverUri + RestMediaStorage.PATH;
 		impl = new JavaMedia();
 	}
 

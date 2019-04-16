@@ -1,6 +1,5 @@
 package microgram.impl.srv.rest;
 
-import java.net.URI;
 import java.util.List;
 
 import microgram.api.Post;
@@ -9,11 +8,14 @@ import microgram.api.rest.RestPosts;
 import microgram.impl.srv.java.JavaPosts;
 
 public class RestPostsResources extends RestResource implements RestPosts {
-
+	
+	final String baseUri;
 	final Posts impl;
 
-	public RestPostsResources(URI serverUri) {
+	public RestPostsResources(String serverUri) {
 		this.impl = new JavaPosts();
+		this.baseUri = serverUri + RestPosts.PATH;
+		
 	}
 
 	@Override

@@ -9,6 +9,7 @@ public class RetryMediaClient extends RetryClient implements Media {
 	
 	public RetryMediaClient( Media impl ) {
 		this.impl = impl;
+		System.out.println(impl);
 	}
 	
 	@Override

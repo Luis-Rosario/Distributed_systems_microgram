@@ -32,7 +32,7 @@ public class PostsRestServer {
 		
 		ResourceConfig config = new ResourceConfig();
 
-		config.register(new RestPostsResources(new URI(serverURI))); 
+		config.register(new RestPostsResources(serverURI)); 
 		
 		JdkHttpServerFactory.createHttpServer( URI.create(serverURI.replace(ip, "0.0.0.0")), config);
 

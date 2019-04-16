@@ -1,7 +1,6 @@
 package microgram.impl.srv.rest;
 
 
-import java.net.URI;
 import java.util.List;
 
 import microgram.api.Profile;
@@ -11,12 +10,14 @@ import microgram.impl.srv.java.JavaProfiles;
 
 public class RestProfilesResources extends RestResource implements RestProfiles {
 
+	final String baseUri;
 	final Profiles impl;
-	
-	public RestProfilesResources(URI serverUri) {
+
+	public RestProfilesResources(String serverUri) {
 		this.impl = new JavaProfiles();
+		this.baseUri = serverUri + RestProfiles.PATH;
 	}
-	
+
 	@Override
 	public Profile getProfile(String userId) {
 		return super.resultOrThrow( impl.getProfile(userId));
@@ -24,7 +25,7 @@ public class RestProfilesResources extends RestResource implements RestProfiles 
 
 	@Override
 	public void createProfile(Profile profile) {
-	  super.resultOrThrow( impl.createProfile(profile));		
+		super.resultOrThrow( impl.createProfile(profile));		
 	}
 
 	@Override
@@ -34,8 +35,8 @@ public class RestProfilesResources extends RestResource implements RestProfiles 
 
 	@Override
 	public void follow(String userId1, String userId2, boolean isFollowing) {
-	  super.resultOrThrow( impl.follow(userId1, userId2, isFollowing));
-		
+		super.resultOrThrow( impl.follow(userId1, userId2, isFollowing));
+
 	}
 
 	@Override
