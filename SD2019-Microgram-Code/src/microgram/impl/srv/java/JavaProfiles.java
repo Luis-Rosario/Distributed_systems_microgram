@@ -4,7 +4,10 @@ import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.CONFLICT;
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
+import static microgram.api.java.Result.ErrorCode.INTERNAL_ERROR;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,17 +16,23 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import discovery.Discovery;
 import microgram.api.Profile;
+import microgram.api.java.Posts;
+import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.api.java.Result.ErrorCode;
+import microgram.impl.clt.rest.RestPostsClient;
 import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles extends RestResource implements microgram.api.java.Profiles {
+	private static String SERVICE = "Microgram-Posts";
 
 	protected Map<String, Profile> users = new ConcurrentHashMap<>();
 	protected Map<String, Set<String>> followers = new ConcurrentHashMap<>();
 	protected Map<String, Set<String>> following = new ConcurrentHashMap<>();
 
+	protected Posts postsClient = null;
 
 	@Override
 	public Result<Profile> getProfile(String userId) {
@@ -48,13 +57,22 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	}
 
 
-	// falta ir dar delete aos post deste profile
+	// falta ir dar delete aos post deste profile (supostamente feito)
 	@Override
 	public Result<Void> deleteProfile(String userId) {
 		Profile profileToDelete = users.remove(userId);
 
 		if(profileToDelete != null) {
 
+			if (postsClient == null)
+				try {
+					postsClient = new RestPostsClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+			
 			Set<String> profileFollows = following.remove(userId);
 			Set<String> profileFollowers = followers.remove(userId);
 
@@ -64,6 +82,16 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 			for(String a:profileFollowers) {
 				following.get(a).remove(userId);
+			}
+			
+			Result<List<String>> posts = postsClient.getPosts(userId);
+			if (posts.isOK()) {
+				for( String post : posts.value()) {
+					postsClient.deletePost(post);
+				}
+			}
+			else {
+				return error(INTERNAL_ERROR);
 			}
 
 			return ok();

@@ -53,6 +53,7 @@ public class JavaMedia implements Media {
 		}
 	}
 
+	// falar com o prof o pq disto n funcionar e dar internal server error
 	@Override
 	public Result<Void> delete(String id) {
 		try {
@@ -63,9 +64,17 @@ public class JavaMedia implements Media {
 				 return Result.error(NOT_FOUND);
 			 }		 
 		}
+		catch(NullPointerException x) {
+			x.printStackTrace();
+			return Result.error(NOT_FOUND);
+		}
+		catch(SecurityException x) {
+			x.printStackTrace();
+			return Result.error(NOT_FOUND);
+		}
 		catch(Exception x) {
 			x.printStackTrace();
-			return Result.error(INTERNAL_ERROR);
+			return Result.error(NOT_FOUND);
 		}
 	}
 }
