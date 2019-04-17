@@ -33,6 +33,7 @@ public class JavaMedia implements Media {
 
 			Files.write(filename.toPath(), bytes);
 			return Result.ok(id);
+			
 		} catch (Exception x) {
 			x.printStackTrace();
 			return error(INTERNAL_ERROR);
@@ -66,15 +67,15 @@ public class JavaMedia implements Media {
 		}
 		catch(NullPointerException x) {
 			x.printStackTrace();
-			return Result.error(NOT_FOUND);
+			return Result.error(INTERNAL_ERROR);
 		}
 		catch(SecurityException x) {
 			x.printStackTrace();
-			return Result.error(NOT_FOUND);
+			return Result.error(INTERNAL_ERROR);
 		}
 		catch(Exception x) {
 			x.printStackTrace();
-			return Result.error(NOT_FOUND);
+			return Result.error(INTERNAL_ERROR);
 		}
 	}
 }

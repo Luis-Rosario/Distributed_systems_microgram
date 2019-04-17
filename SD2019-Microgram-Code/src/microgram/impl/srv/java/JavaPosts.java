@@ -73,13 +73,11 @@ public class JavaPosts implements Posts {
 			Set<String> posts = userPosts.get(post.getOwnerId());
 			if (posts == null)
 				userPosts.put(post.getOwnerId(), posts = new LinkedHashSet<>());
-			posts.add(postId);
 
-			return ok(postId);
+			posts.add(postId);
 		}
-		else
-			return error(CONFLICT);
-	}
+		return ok(postId);
+}
 
 	@Override
 	public Result<Void> like(String postId, String userId, boolean isLiked) {

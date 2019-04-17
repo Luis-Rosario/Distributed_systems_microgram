@@ -8,6 +8,8 @@ import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import discovery.Discovery;
+import microgram.impl.srv.rest.utils.GenericExceptionMapper;
+import microgram.impl.srv.rest.utils.PrematchingRequestFilter;
 import utils.IP;
 
 
@@ -32,7 +34,9 @@ public class ProfilesRestServer {
 		
 		ResourceConfig config = new ResourceConfig();
 
-		config.register(new RestProfilesResources(serverURI)); 
+		config.register(new RestProfilesResources(serverURI));
+		config.register(new PrematchingRequestFilter());
+		config.register(new GenericExceptionMapper());
 		
 		JdkHttpServerFactory.createHttpServer( URI.create(serverURI.replace(ip, "0.0.0.0")), config);
 

@@ -17,10 +17,6 @@ implements Posts {
     public static final String SERVICE = "Microgram-Posts";
     SoapPosts impl;
 
-    public SoapPostsClient() throws IOException, URISyntaxException {
-        this(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
-    }
-
     public SoapPostsClient(URI serverUri) {
         super(serverUri);
     }

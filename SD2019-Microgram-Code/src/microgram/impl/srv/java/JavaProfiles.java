@@ -60,18 +60,18 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	// falta ir dar delete aos post deste profile (supostamente feito)
 	@Override
 	public Result<Void> deleteProfile(String userId) {
-		Profile profileToDelete = users.remove(userId);
+		//Profile profileToDelete = users.remove(userId);
 
-		if(profileToDelete != null) {
+		if(users.containsKey(userId)) {
 
-			if (postsClient == null)
-				try {
-					postsClient = new RestPostsClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				}
+//			if (postsClient == null)
+//				try {
+//					postsClient = new RestPostsClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				} catch (URISyntaxException e) {
+//					e.printStackTrace();
+//				}
 			
 			Set<String> profileFollows = following.remove(userId);
 			Set<String> profileFollowers = followers.remove(userId);
@@ -84,15 +84,15 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				following.get(a).remove(userId);
 			}
 			
-			Result<List<String>> posts = postsClient.getPosts(userId);
-			if (posts.isOK()) {
-				for( String post : posts.value()) {
-					postsClient.deletePost(post);
-				}
-			}
-			else {
-				return error(INTERNAL_ERROR);
-			}
+//			Result<List<String>> posts = postsClient.getPosts(userId);
+//			if (posts.isOK()) {
+//				for( String post : posts.value()) {
+//					postsClient.deletePost(post);
+//				}
+//			}
+//			else {
+//				return error(INTERNAL_ERROR);
+//			}
 
 			return ok();
 		}
