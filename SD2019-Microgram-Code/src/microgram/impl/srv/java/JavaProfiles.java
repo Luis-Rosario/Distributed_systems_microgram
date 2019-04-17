@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import microgram.api.Profile;
@@ -19,9 +20,9 @@ import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles extends RestResource implements microgram.api.java.Profiles {
 
-	protected Map<String, Profile> users = new HashMap<>();
-	protected Map<String, Set<String>> followers = new HashMap<>();
-	protected Map<String, Set<String>> following = new HashMap<>();
+	protected Map<String, Profile> users = new ConcurrentHashMap<>();
+	protected Map<String, Set<String>> followers = new ConcurrentHashMap<>();
+	protected Map<String, Set<String>> following = new ConcurrentHashMap<>();
 
 
 	@Override

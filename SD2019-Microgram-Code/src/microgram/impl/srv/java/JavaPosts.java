@@ -15,6 +15,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import discovery.Discovery;
 import microgram.api.Post;
@@ -27,9 +28,9 @@ import utils.Hash;
 public class JavaPosts implements Posts {
 	private static String SERVICE = "Microgram-Profiles";
 
-	protected Map<String, Post> posts = new HashMap<>();
-	protected Map<String, Set<String>> likes = new HashMap<>();
-	protected Map<String, Set<String>> userPosts = new HashMap<>();
+	protected Map<String, Post> posts = new ConcurrentHashMap<>();
+	protected Map<String, Set<String>> likes = new ConcurrentHashMap<>();
+	protected Map<String, Set<String>> userPosts = new ConcurrentHashMap<>();
 
 	Profiles profileClient = null;		//DIY Code
 	
