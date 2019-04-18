@@ -3,6 +3,7 @@ package microgram.api.rest;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -38,6 +39,11 @@ public interface RestProfiles {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	List<Profile> search( @QueryParam("query") String name );
+	
+	@DELETE
+	@Path("/{userId}")
+	void deleteProfile( @PathParam("userId") String userId );
+	
 	
 	@PUT
 	@Path("/{userId1}/following/{userId2}")
