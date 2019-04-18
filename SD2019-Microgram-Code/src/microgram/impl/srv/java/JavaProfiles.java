@@ -44,7 +44,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		res.setFollowing( following.get(userId).size() );
 		return ok(res);
 	}
-	 
+
 	@Override
 	public Result<Void> createProfile(Profile profile) {
 		Profile res = users.putIfAbsent( profile.getUserId(), profile );
@@ -64,35 +64,42 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 		if(profileToDelete != null) {
 
-//			if (postsClient == null)
-//				try {
-//					postsClient = new RestPostsClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				} catch (URISyntaxException e) {
-//					e.printStackTrace();
-//				}
-			users.remove(userId);
-//			Set<String> profileFollows = following.remove(userId);
-//			Set<String> profileFollowers = followers.remove(userId);
-//
-//			for(String a:profileFollows) {
-//				followers.get(a).remove(userId);
-//			}
-//
-//			for(String a:profileFollowers) {
-//				following.get(a).remove(userId);
-//			}
+			if (postsClient == null)
+				try {
+					postsClient = new RestPostsClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
 			
-//			Result<List<String>> posts = postsClient.getPosts(userId);
-//			if (posts.isOK()) {
-//				for( String post : posts.value()) {
-//					postsClient.deletePost(post);
-//				}
-//			}
-//			else {
-//				return error(INTERNAL_ERROR);
-//			}
+			
+			users.remove(userId);
+			Set<String> profileFollows = following.remove(userId);
+			Set<String> profileFollowers = followers.remove(userId);
+			Profile res =null;
+			
+			for(String a:profileFollows) {
+				followers.get(a).remove(userId);
+				 res = users.get( a );
+				 res.setFollowers(res.getFollowers() - 1);
+			}
+			
+			for(String a:profileFollowers) {
+				following.get(a).remove(userId);
+				 res = users.get( a );
+				 res.setFollowing(res.getFollowing() - 1);
+			}
+
+			Result<List<String>> posts = postsClient.getPosts(userId);
+			if (posts.isOK()) {
+				for( String post : posts.value()) {
+					postsClient.deletePost(post);
+				}
+			}
+			else {
+				return error(INTERNAL_ERROR);
+			}
 
 			return ok();
 		}
