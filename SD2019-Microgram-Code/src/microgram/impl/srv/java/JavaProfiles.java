@@ -73,16 +73,16 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 //					e.printStackTrace();
 //				}
 			users.remove(userId);
-			Set<String> profileFollows = following.remove(userId);
-			Set<String> profileFollowers = followers.remove(userId);
-
-			for(String a:profileFollows) {
-				followers.get(a).remove(userId);
-			}
-
-			for(String a:profileFollowers) {
-				following.get(a).remove(userId);
-			}
+//			Set<String> profileFollows = following.remove(userId);
+//			Set<String> profileFollowers = followers.remove(userId);
+//
+//			for(String a:profileFollows) {
+//				followers.get(a).remove(userId);
+//			}
+//
+//			for(String a:profileFollowers) {
+//				following.get(a).remove(userId);
+//			}
 			
 //			Result<List<String>> posts = postsClient.getPosts(userId);
 //			if (posts.isOK()) {
@@ -147,6 +147,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			return ok(s1.contains( userId2 ) && s2.contains( userId1 ));
 	}
 
+	@Override
 	public Result<Set<String>> getfollowing(String userId){
 		if(users.get( userId ) != null) {
 			return ok(following.get(userId));

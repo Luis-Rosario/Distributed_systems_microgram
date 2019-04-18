@@ -1,6 +1,7 @@
 package microgram.api.rest;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -53,4 +54,9 @@ public interface RestProfiles {
 	@GET
 	@Path("/{userId1}/following/{userId2}")
 	boolean isFollowing( @PathParam("userId1") String userId1, @PathParam("userId2") String userId2);
+	
+	@GET
+	@Path("/following/{userId}")
+	Set<String> getfollowing(@PathParam ("userId") String userId);
+	
 }

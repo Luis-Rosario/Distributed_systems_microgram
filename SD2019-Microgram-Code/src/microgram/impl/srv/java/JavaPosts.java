@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import discovery.Discovery;
 import microgram.api.Post;
+import microgram.api.Profile;
 import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
@@ -63,7 +64,7 @@ public class JavaPosts implements Posts {
 
 
 	@Override
-	//tenho de por no media storage com o kafka??
+	//tenho de por no media storage com o kafka?? (incrementar o contador)
 	public Result<String> createPost(Post post) {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
 		if (posts.putIfAbsent(postId, post) == null) {
@@ -110,9 +111,20 @@ public class JavaPosts implements Posts {
 
 	@Override
 	public Result<List<String>> getPosts(String userId) {
-		Set<String> res = userPosts.get(userId);
-		if (res != null)
+		if(profileClient == null)
+			try {
+				profileClient = new RestProfilesClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
+			} catch (Exception e) {
+				return error( INTERNAL_ERROR );
+			}
+		 Result<Profile> p = profileClient.getProfile(userId);
+		 if (p.isOK()) {
+			Set<String> res = userPosts.get(userId);
+			if ( res == null)
+				return ok(new ArrayList<>());
+			else
 			return ok(new ArrayList<>(res));
+		 }
 		else
 			return error( NOT_FOUND );
 	}

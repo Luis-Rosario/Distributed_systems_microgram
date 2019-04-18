@@ -100,7 +100,6 @@ public class RestProfilesClient extends RestClient implements Profiles {
 		Response  r = target.path("following")
 							.path(userId)
 							.request()
-							.accept(MediaType.APPLICATION_JSON)
 							.get(); 		
 
 		return super.responseContents(r, Status.OK, new GenericType<Set<String>>() {});
