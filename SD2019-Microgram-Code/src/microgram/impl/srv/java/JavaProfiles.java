@@ -60,6 +60,9 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	// falta ir dar delete aos post deste profile (supostamente feito)
 	@Override
     public Result<Void> deleteProfile(String userId) {
+		try {
+		System.err.println("ASDASDASDASDADSASDSA");
+		System.out.println("ASDASDASDASD123123");
         Profile profileToDelete = users.get(userId);
 
         if(profileToDelete != null) {
@@ -107,6 +110,11 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
         else {
             return error(NOT_FOUND);
         }
+		}
+		catch(Exception e ) {
+			e.printStackTrace();
+			return error(INTERNAL_ERROR);
+		}
     }
 
 	@Override
