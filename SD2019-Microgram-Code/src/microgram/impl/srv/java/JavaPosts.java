@@ -144,6 +144,7 @@ public class JavaPosts implements Posts {
 					List<String> feedPics = new ArrayList<>();
 					
 					for(String elem: following) {
+						if (userPosts.containsKey(elem))
 						for(String pic: userPosts.get(elem)) {
 							feedPics.add(pic);
 						}	

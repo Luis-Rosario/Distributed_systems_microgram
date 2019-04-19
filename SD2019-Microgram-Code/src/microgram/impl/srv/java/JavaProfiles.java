@@ -57,14 +57,10 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	}
 
 
-	// falta ir dar delete aos post deste profile (supostamente feito)
 	@Override
     public Result<Void> deleteProfile(String userId) {
-		try {
-		System.err.println("ASDASDASDASDADSASDSA");
-		System.out.println("ASDASDASDASD123123");
         Profile profileToDelete = users.get(userId);
-
+        System.out.println(userId);
         if(profileToDelete != null) {
 
             if (postsClient == null)
@@ -76,7 +72,18 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
                     e.printStackTrace();
                 }
 
+            
 
+            Result<List<String>> posts = postsClient.getPosts(userId);
+            if (posts.isOK()) {
+                for( String post : posts.value()) {
+                    postsClient.deletePost(post);
+                }
+            }
+            else {
+                return error(INTERNAL_ERROR);
+            }
+            
             users.remove(userId);
             Set<String> profileFollows = following.remove(userId);
             Set<String> profileFollowers = followers.remove(userId);
@@ -94,27 +101,12 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
                  res.setFollowing(res.getFollowing() - 1);
             }
 
-            Result<List<String>> posts = postsClient.getPosts(userId);
-            if (posts.isOK()) {
-                for( String post : posts.value()) {
-                    postsClient.deletePost(post);
-                }
-            }
-            else {
-                return error(INTERNAL_ERROR);
-            }
-
             return ok();
         }
 
         else {
             return error(NOT_FOUND);
         }
-		}
-		catch(Exception e ) {
-			e.printStackTrace();
-			return error(INTERNAL_ERROR);
-		}
     }
 
 	@Override
