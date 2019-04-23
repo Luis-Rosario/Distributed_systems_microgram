@@ -60,7 +60,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	@Override
     public Result<Void> deleteProfile(String userId) {
         Profile profileToDelete = users.get(userId);
-        System.out.println(userId);
+ 
         if(profileToDelete != null) {
 
             if (postsClient == null)
@@ -72,7 +72,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
                     e.printStackTrace();
                 }
 
-            
+        
 
             Result<List<String>> posts = postsClient.getPosts(userId);
             if (posts.isOK()) {
@@ -81,6 +81,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
                 }
             }
             else {
+            	 
                 return error(INTERNAL_ERROR);
             }
             
@@ -88,13 +89,13 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
             Set<String> profileFollows = following.remove(userId);
             Set<String> profileFollowers = followers.remove(userId);
             Profile res =null;
-
+           
             for(String a:profileFollows) {
                 followers.get(a).remove(userId);
                  res = users.get( a );
                  res.setFollowers(res.getFollowers() - 1);
             }
-
+            
             for(String a:profileFollowers) {
                 following.get(a).remove(userId);
                  res = users.get( a );
