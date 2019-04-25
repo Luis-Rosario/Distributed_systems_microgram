@@ -57,57 +57,59 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	}
 
 
-	// falta ir dar delete aos post deste profile (supostamente feito)
 	@Override
-	public Result<Void> deleteProfile(String userId) {
-		Profile profileToDelete = users.get(userId);
+    public Result<Void> deleteProfile(String userId) {
+	        Profile profileToDelete = users.get(userId);
+	 
+	        if(profileToDelete != null) {
 
-		if(profileToDelete != null) {
+	            if (postsClient == null)
+	                try {
+	                    postsClient = new RestPostsClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
+	                } catch (IOException e) {
+	                    e.printStackTrace();
+	                } catch (URISyntaxException e) {
+	                    e.printStackTrace();
+	                }
 
-			if (postsClient == null)
-				try {
-					postsClient = new RestPostsClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				}
-			
-			
-			users.remove(userId);
-			Set<String> profileFollows = following.remove(userId);
-			Set<String> profileFollowers = followers.remove(userId);
-			Profile res =null;
-			
-			for(String a:profileFollows) {
-				followers.get(a).remove(userId);
-				 res = users.get( a );
-				 res.setFollowers(res.getFollowers() - 1);
-			}
-			
-			for(String a:profileFollowers) {
-				following.get(a).remove(userId);
-				 res = users.get( a );
-				 res.setFollowing(res.getFollowing() - 1);
-			}
 
-			Result<List<String>> posts = postsClient.getPosts(userId);
-			if (posts.isOK()) {
-				for( String post : posts.value()) {
-					postsClient.deletePost(post);
-				}
-			}
-			else {
-				return error(INTERNAL_ERROR);
-			}
 
-			return ok();
-		}
+	            Result<List<String>> posts = postsClient.getPosts(userId);
+	            if (posts.isOK()) {
+	                for( String post : posts.value()) {
+	                    postsClient.deletePost(post);
+	                }
+	            }
+	            else {
 
-		else {
-			return error(NOT_FOUND);
-		}
-	}
+	                return error(INTERNAL_ERROR);
+	            }
+
+	            users.remove(userId);
+	            Set<String> profileFollows = following.remove(userId);
+	            Set<String> profileFollowers = followers.remove(userId);
+	            Profile res =null;
+
+	            for(String a:profileFollows) {
+	                followers.get(a).remove(userId);
+	                 res = users.get( a );
+	                 res.setFollowers(res.getFollowers() - 1);
+	            }
+
+	            for(String a:profileFollowers) {
+	                following.get(a).remove(userId);
+	                 res = users.get( a );
+	                 res.setFollowing(res.getFollowing() - 1);
+	            }
+
+	            return ok();
+	        }
+
+	        else {
+	            return error(NOT_FOUND);
+	        }
+	    }
+    
 
 	@Override
 	public Result<List<Profile>> search(String prefix) {

@@ -56,7 +56,7 @@ public interface RestProfiles {
 	boolean isFollowing( @PathParam("userId1") String userId1, @PathParam("userId2") String userId2);
 	
 	@GET
-	@Path("/following/{userId}")
+	@Path("/getfollowing/{userId}")
 	Set<String> getfollowing(@PathParam ("userId") String userId);
 	
 }
