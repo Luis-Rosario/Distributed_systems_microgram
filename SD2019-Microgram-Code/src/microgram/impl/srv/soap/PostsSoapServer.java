@@ -10,6 +10,7 @@ import javax.xml.ws.Endpoint;
 import com.sun.net.httpserver.HttpServer;
 
 import discovery.Discovery;
+import microgram.api.soap.SoapPosts;
 import utils.IP;
 
 
@@ -25,6 +26,7 @@ public class PostsSoapServer {
 	public static final int PORT = 8877;
 	public static final String SERVICE = "Microgram-Posts";
 	public static String SERVER_BASE_URI = "http://%s:%s/soap";
+	public static String SOAP_BASE_PATH = "/soap/" + SoapPosts.NAME;		
 	
 	public static void main(String[] args) throws Exception {
 		Log.setLevel( Level.FINER );

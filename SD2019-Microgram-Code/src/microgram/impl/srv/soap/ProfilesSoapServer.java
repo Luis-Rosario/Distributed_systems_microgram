@@ -10,6 +10,7 @@ import javax.xml.ws.Endpoint;
 import com.sun.net.httpserver.HttpServer;
 
 import discovery.Discovery;
+import microgram.api.soap.SoapProfiles;
 import utils.IP;
 
 @SuppressWarnings("restriction")
@@ -24,6 +25,7 @@ public class ProfilesSoapServer {
 	public static final int PORT = 8887;
 	public static final String SERVICE = "Microgram-Profiles";
 	public static String SERVER_BASE_URI = "http://%s:%s/soap";
+	public static String SOAP_BASE_PATH = "/soap/" + SoapProfiles.NAME;		
 
 
 	public static void main(String[] args) throws Exception {
@@ -37,7 +39,7 @@ public class ProfilesSoapServer {
 
 		Endpoint soapEndpoint = Endpoint.create(new ProfilesWebService());
 		
-		soapEndpoint.publish(server.createContext("/soap/profiles"));
+		soapEndpoint.publish(server.createContext(SOAP_BASE_PATH));
 		server.setExecutor( Executors.newCachedThreadPool() );
 		server.start();
 
