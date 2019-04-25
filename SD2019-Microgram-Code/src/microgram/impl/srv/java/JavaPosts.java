@@ -27,6 +27,7 @@ import microgram.api.Profile;
 import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
+import microgram.impl.clt.java.ClientFactory;
 import microgram.impl.clt.rest.RestPostsClient;
 import microgram.impl.clt.rest.RestProfilesClient;
 import microgram.impl.srv.java.JavaMedia.MediaEventKeys;
@@ -139,7 +140,7 @@ public class JavaPosts implements Posts {
 	public Result<List<String>> getPosts(String userId) {
 		if (profileClient == null)
 			try {
-				profileClient = new RestProfilesClient(Discovery.findUrisOf((String) SERVICE, (int) 1)[0]);
+				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) SERVICE, (int) 1)[0]);
 			} catch (Exception e) {
 				return error(INTERNAL_ERROR);
 			}
@@ -159,7 +160,7 @@ public class JavaPosts implements Posts {
 	public Result<List<String>> getFeed(String userId) {
 		try {
 			if (profileClient == null)
-				profileClient = new RestProfilesClient(Discovery.findUrisOf((String) SERVICE, (int) 1)[0]);
+				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) SERVICE, (int) 1)[0]);
 
 			Result<Set<String>> foll = profileClient.getfollowing(userId);
 

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import discovery.Discovery;
 import kakfa.KafkaPublisher;
+import kakfa.KafkaSubscriber;
 import kakfa.KafkaUtils;
 import microgram.api.Profile;
 import microgram.api.java.Posts;
@@ -26,6 +27,7 @@ import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.api.java.Result.ErrorCode;
 import microgram.impl.clt.rest.RestPostsClient;
+import microgram.impl.srv.java.JavaPosts.PostsEventKeys;
 import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles extends RestResource implements microgram.api.java.Profiles {
@@ -49,6 +51,9 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	public JavaProfiles() {
 		this.kafka = new KafkaPublisher();
 		KafkaUtils.createTopics(Arrays.asList(JavaProfiles.PROFILES_EVENTS));
+		new Thread(() -> {
+			listen();
+		}).start();
 	}
 
 	@Override
@@ -79,29 +84,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	        Profile profileToDelete = users.get(userId);
 	 
 	        if(profileToDelete != null) {
-
-	            if (postsClient == null)
-	                try {
-	                    postsClient = new RestPostsClient(Discovery.findUrisOf((String)SERVICE, (int)1)[0]);
-	                } catch (IOException e) {
-	                    e.printStackTrace();
-	                } catch (URISyntaxException e) {
-	                    e.printStackTrace();
-	                }
-
-
-
-	            Result<List<String>> posts = postsClient.getPosts(userId);
-	            if (posts.isOK()) {
-	                for( String post : posts.value()) {
-	                    postsClient.deletePost(post);
-	                }
-	            }
-	            else {
-
-	                return error(INTERNAL_ERROR);
-	            }
-
 	            users.remove(userId);
 	            Set<String> profileFollows = following.remove(userId);
 	            Set<String> profileFollowers = followers.remove(userId);
@@ -118,7 +100,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	                 res = users.get( a );
 	                 res.setFollowing(res.getFollowing() - 1);
 	            }
-
+	            kafka.publish(PROFILES_EVENTS, PostsEventKeys.CREATEPOST.name(), userId);
 	            return ok();
 	        }
 
@@ -182,6 +164,28 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			return error(NOT_FOUND);					
 
 	}
+	
+	
+	private void listen() {
+		List<String> topics = Arrays.asList(JavaPosts.POSTS_EVENTS);
+
+		KafkaSubscriber subscriber = new KafkaSubscriber(topics);
+		
+		subscriber.consume((topic, key, value) -> {
+			Profile p = null;
+			switch (key) {
+			case "DELETEPOSTUSER":
+			    p = getProfile(value).value();
+				p.setPosts(p.getPosts() -1);
+				break;
+			case "CREATEPOST":
+				 p = getProfile(value).value();
+				p.setPosts(p.getPosts() +1);
+				break;
+			}
+		});
+	}
+
 }	
 
 
