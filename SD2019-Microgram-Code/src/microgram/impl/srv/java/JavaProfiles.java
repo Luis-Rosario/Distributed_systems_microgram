@@ -8,6 +8,7 @@ import static microgram.api.java.Result.ErrorCode.INTERNAL_ERROR;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import discovery.Discovery;
+import kakfa.KafkaPublisher;
+import kakfa.KafkaUtils;
 import microgram.api.Profile;
 import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
@@ -26,13 +29,27 @@ import microgram.impl.clt.rest.RestPostsClient;
 import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles extends RestResource implements microgram.api.java.Profiles {
-	private static String SERVICE = "Microgram-Posts";
+	public static String SERVICE = "Microgram-Posts";
 
 	protected Map<String, Profile> users = new ConcurrentHashMap<>();
 	protected Map<String, Set<String>> followers = new ConcurrentHashMap<>();
 	protected Map<String, Set<String>> following = new ConcurrentHashMap<>();
 
 	protected Posts postsClient = null;
+
+	
+	public static final String PROFILES_EVENTS = "Microgram-ProfilesEvents";
+
+	enum ProfilesEventKeys {
+		DELETEPROFILE 
+	};
+	
+	final KafkaPublisher kafka;
+	
+	public JavaProfiles() {
+		this.kafka = new KafkaPublisher();
+		KafkaUtils.createTopics(Arrays.asList(JavaProfiles.PROFILES_EVENTS));
+	}
 
 	@Override
 	public Result<Profile> getProfile(String userId) {

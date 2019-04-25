@@ -19,5 +19,5 @@ discovery-multicast-address=226.226.226.226:2266
 
 discovery-finduris-timeout=5000
 
-uses-kafka-bool=
+uses-kafka-bool= true
 
