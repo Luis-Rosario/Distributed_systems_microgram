@@ -9,6 +9,7 @@ import static microgram.api.java.Result.ErrorCode.INTERNAL_ERROR;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -18,12 +19,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import discovery.Discovery;
+import kakfa.KafkaPublisher;
+import kakfa.KafkaUtils;
 import microgram.api.Post;
 import microgram.api.Profile;
 import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.impl.clt.rest.RestProfilesClient;
+import microgram.impl.srv.java.JavaMedia.MediaEventKeys;
 import utils.Hash;
 
 public class JavaPosts implements Posts {
@@ -35,6 +39,18 @@ public class JavaPosts implements Posts {
 
 	Profiles profileClient = null;		//DIY Code
 	
+	public static final String POSTS_EVENTS = "Microgram-PostsEvents";
+
+	enum PostsEventKeys {
+	DELETEPOSTID , DELETEPOSTUSER , CREATEPOST , LIKEPOST 
+	};
+	
+	final KafkaPublisher kafka;
+	
+	public JavaPosts() {
+		this.kafka = new KafkaPublisher();
+		KafkaUtils.createTopics(Arrays.asList(JavaPosts.POSTS_EVENTS));
+	}
 
 	@Override
 	public Result<Post> getPost(String postId) {
@@ -56,6 +72,9 @@ public class JavaPosts implements Posts {
 			Set<String> postsUser = userPosts.get(post.getOwnerId());
 			postsUser.remove(postId);
 			posts.remove(postId);
+			kafka.publish(POSTS_EVENTS, PostsEventKeys.DELETEPOSTUSER.name(), post.getOwnerId());
+			kafka.publish(POSTS_EVENTS, PostsEventKeys.DELETEPOSTID.name(), postId);
+			
 			return ok();
 		}
 		else

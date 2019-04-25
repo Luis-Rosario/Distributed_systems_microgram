@@ -7,7 +7,10 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Arrays;
 
+import kakfa.KafkaPublisher;
+import kakfa.KafkaUtils;
 import microgram.api.java.Media;
 import microgram.api.java.Result;
 import utils.Hash;
@@ -18,8 +21,19 @@ public class JavaMedia implements Media {
 	private static final String ROOT_DIR = "/tmp/microgram/";
 	private static String SERVICE = "Microgram-MediaStorage";
 
+	public static final String MEDIA_STORAGE_EVENTS = "Microgram-MediaStorageEvents";
+
+	enum MediaEventKeys {
+		UPLOAD, DOWNLOAD, DELETE
+	};
+	final KafkaPublisher kafka;
+	
 	public JavaMedia() {
 		new File(ROOT_DIR).mkdirs();
+
+		this.kafka = new KafkaPublisher();
+
+		KafkaUtils.createTopics(Arrays.asList(JavaMedia.MEDIA_STORAGE_EVENTS));
 	}
 
 	@Override
@@ -32,6 +46,9 @@ public class JavaMedia implements Media {
 				return Result.error(CONFLICT);
 
 			Files.write(filename.toPath(), bytes);
+			
+			kafka.publish(MEDIA_STORAGE_EVENTS, MediaEventKeys.UPLOAD.name(), id);
+			
 			return Result.ok(id);
 			
 		} catch (Exception x) {
@@ -44,8 +61,10 @@ public class JavaMedia implements Media {
 	public Result<byte[]> download(String id) {
 		try {
 			File filename = new File(ROOT_DIR + id + MEDIA_EXTENSION);
-			if (filename.exists())
+			if (filename.exists()) {
+				kafka.publish(MEDIA_STORAGE_EVENTS, MediaEventKeys.DELETE.name(), id);
 				return Result.ok(Files.readAllBytes(filename.toPath()));
+			}
 			else
 				return Result.error(NOT_FOUND);
 		} catch (Exception x) {
