@@ -203,6 +203,15 @@ public class JavaPosts implements Posts {
 							deletePost(post);
 						}
 					}
+				
+					for(Post post: this.posts.values()) {
+						for(String userLike: likes.get(post.getPostId())) {
+							if(userLike.equals(value)) {
+								likes.get(post.getPostId()).remove(userLike);
+								post.setLikes(likes.size());
+							}
+						}
+					}
 			}
 		});
 	}

@@ -100,7 +100,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	                 res = users.get( a );
 	                 res.setFollowing(res.getFollowing() - 1);
 	            }
-	            kafka.publish(PROFILES_EVENTS, PostsEventKeys.CREATEPOST.name(), userId);
+	            kafka.publish(PROFILES_EVENTS, ProfilesEventKeys.DELETEPROFILE.name(), userId);
 	            return ok();
 	        }
 
