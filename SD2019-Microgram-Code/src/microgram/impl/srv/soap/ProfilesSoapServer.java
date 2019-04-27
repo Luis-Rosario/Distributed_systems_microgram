@@ -45,9 +45,9 @@ public class ProfilesSoapServer {
 
 		Log.info(String.format("%s Soap Server ready @ %s\n", SERVICE, ip + ":" + PORT));
 
-		new Thread( () -> {
+		
 			Discovery.announce(SERVICE, serverURI);   
-		}).start();
+
 
 	}
 }

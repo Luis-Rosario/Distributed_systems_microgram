@@ -17,7 +17,7 @@ profiles-soap-service-port=8887
 
 discovery-multicast-address=226.226.226.226:2266
 
-discovery-finduris-timeout=5000
+discovery-finduris-timeout=10000
 
 uses-kafka-bool= true
 

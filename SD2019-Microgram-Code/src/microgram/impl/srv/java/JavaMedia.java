@@ -77,8 +77,6 @@ public class JavaMedia implements Media {
 	@Override
 	public Result<Void> delete(String id) {
 		try {
-			System.err.println("ASDASDASDASDA  MEDIA DELETE");
-			System.out.println("MEDIA DELETE HERE");
 			 File file = new File (ROOT_DIR + id + MEDIA_EXTENSION);
 			 if(file.delete())
 				 return Result.ok();

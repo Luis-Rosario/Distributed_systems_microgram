@@ -34,21 +34,15 @@ public class PostsSoapServer {
 		String ip = IP.hostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
 		
-		System.err.println("1");
 		HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", PORT), 0);
-		System.err.println("2");
 		Endpoint soapEndpoint = Endpoint.create(new PostsWebService());
-		System.err.println("3");
 		soapEndpoint.publish(server.createContext("/soap/posts"));
-		System.err.println("4");
 		server.setExecutor( Executors.newCachedThreadPool() );
 		server.start();
-		System.err.println("5");
 		Log.info(String.format("%s Soap Server ready @ %s\n", SERVICE, ip + ":" + PORT));
 		
-		new Thread( () -> {
+		
 			Discovery.announce(SERVICE, serverURI);   
-		}).start();
 		
 
 	}
