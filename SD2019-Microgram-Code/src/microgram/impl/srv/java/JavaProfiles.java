@@ -43,7 +43,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	public static final String PROFILES_EVENTS = "Microgram-ProfilesEvents";
 
 	enum ProfilesEventKeys {
-		DELETEPROFILE 
+		DELETEPROFILE, SUCCESS
 	};
 	
 	final KafkaPublisher kafka;
@@ -75,6 +75,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 		followers.put( profile.getUserId(), new HashSet<>());
 		following.put( profile.getUserId(), new HashSet<>());
+		kafka.publish(PROFILES_EVENTS, ProfilesEventKeys.SUCCESS.name(), profile.getPhotoUrl());
 		return ok();
 	}
 

@@ -8,8 +8,11 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.List;
 
+import garbage_colector.Garbage_Colector;
 import kakfa.KafkaPublisher;
+import kakfa.KafkaSubscriber;
 import kakfa.KafkaUtils;
 import microgram.api.java.Media;
 import microgram.api.java.Result;
@@ -34,6 +37,10 @@ public class JavaMedia implements Media {
 		this.kafka = new KafkaPublisher();
 
 		KafkaUtils.createTopics(Arrays.asList(JavaMedia.MEDIA_STORAGE_EVENTS));
+		
+		new Thread(() -> {
+			garbageCollector();
+		}).start();
 	}
 
 	@Override
@@ -96,5 +103,19 @@ public class JavaMedia implements Media {
 			x.printStackTrace();
 			return Result.error(INTERNAL_ERROR);
 		}
+	}
+	
+	
+	private void garbageCollector() {
+		List<String> topics = Arrays.asList(Garbage_Colector.GARBAGE_EVENTS);
+		KafkaSubscriber subscriber = new KafkaSubscriber(topics);
+		
+		subscriber.consume((topic, key, value) -> {	
+			switch (key) {
+			case "DELETEPHOTO":
+				delete(value);
+			}
+		
+		});
 	}
 }
