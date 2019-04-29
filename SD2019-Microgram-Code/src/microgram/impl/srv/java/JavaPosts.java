@@ -89,7 +89,7 @@ public class JavaPosts implements Posts {
 	}
 
 	@Override
-	// tenho de por no media storage com o kafka?? (incrementar o contador)
+	// tenho de por no media storage com o kafka?? (incrementar o contador) verificar userId
 	public Result<String> createPost(Post post) {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
 		if (posts.putIfAbsent(postId, post) == null) {
