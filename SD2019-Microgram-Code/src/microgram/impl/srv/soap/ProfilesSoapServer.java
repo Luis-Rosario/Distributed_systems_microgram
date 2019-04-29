@@ -31,10 +31,12 @@ public class ProfilesSoapServer {
 	public static void main(String[] args) throws Exception {
 		Log.setLevel( Level.FINER );
 
+		
 		String ip = IP.hostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
 
-
+		Discovery.announce(SERVICE, serverURI);   
+		
 		HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", PORT), 0);
 
 		Endpoint soapEndpoint = Endpoint.create(new ProfilesWebService());
@@ -46,7 +48,7 @@ public class ProfilesSoapServer {
 		Log.info(String.format("%s Soap Server ready @ %s\n", SERVICE, ip + ":" + PORT));
 
 		
-			Discovery.announce(SERVICE, serverURI);   
+		
 
 
 	}

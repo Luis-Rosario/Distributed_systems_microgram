@@ -7,6 +7,7 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import static microgram.api.java.Result.ErrorCode.INTERNAL_ERROR;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -160,7 +161,7 @@ public class JavaPosts implements Posts {
 	public Result<List<String>> getFeed(String userId) {
 		try {
 			if (profileClient == null)
-				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) SERVICE, (int) 1)[0]);
+				profileClient = ClientFactory.getProfilesClient(new URI("http://172.20.0.6:8887/soap")); //Discovery.findUrisOf((String) SERVICE, (int) 1)[0]
 
 			Result<Set<String>> foll = profileClient.getfollowing(userId);
 
@@ -181,8 +182,8 @@ public class JavaPosts implements Posts {
 			else {
 				return error(NOT_FOUND);
 			}
-		} catch (IOException e) {
-			return error(INTERNAL_ERROR);
+//		} catch (IOException e) {
+//			return error(INTERNAL_ERROR);
 		} catch (URISyntaxException e) {
 			return error(INTERNAL_ERROR);
 		}

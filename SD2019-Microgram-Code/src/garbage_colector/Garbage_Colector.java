@@ -43,7 +43,7 @@ public class Garbage_Colector {
 				
 			switch (key) {
 			case "UPLOAD" : 
-				doSomething(value);
+				
 
 			}
 		
