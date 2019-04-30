@@ -46,7 +46,7 @@ public class JavaPosts implements Posts {
 	public static final String POSTS_EVENTS = "Microgram-PostsEvents";
 
 	enum PostsEventKeys {
-		DELETEPOSTID, DELETEPOSTUSER, CREATEPOST, LIKEPOST
+		DELETEPOSTID, DELETEPOSTUSER, CREATEPOST, LIKEPOST, SUCCESS,
 	};
 
 	final KafkaPublisher kafka;
@@ -103,6 +103,8 @@ public class JavaPosts implements Posts {
 			posts.add(postId);
 
 			kafka.publish(POSTS_EVENTS, PostsEventKeys.CREATEPOST.name(), post.getOwnerId());
+			kafka.publish(POSTS_EVENTS, PostsEventKeys.SUCCESS.name(), post.getMediaUrl());
+
 		}
 		return ok(postId);
 	}
