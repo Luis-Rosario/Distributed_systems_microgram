@@ -15,6 +15,7 @@ import discovery.Discovery;
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
+import microgram.api.soap.SoapPosts;
 import microgram.api.soap.SoapProfiles;
 
 
@@ -74,7 +75,7 @@ public class SoapProfilesClient extends SoapClient implements Profiles {
 			try {
 				QName QNAME = new QName(SoapProfiles.NAMESPACE, SoapProfiles.NAME);		
 				Service service;
-				service = Service.create( new URL(super.uri.toString() + WSDL), QNAME);
+				service = Service.create( new URL(super.uri.toString() +"/" + SoapProfiles.NAME+ WSDL), QNAME);
 				impl = service.getPort( microgram.api.soap.SoapProfiles.class );
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
