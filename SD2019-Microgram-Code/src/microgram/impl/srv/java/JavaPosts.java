@@ -30,7 +30,7 @@ import microgram.impl.clt.java.ClientFactory;
 import utils.Hash;
 
 public class JavaPosts implements Posts {
-	private static String SERVICE = "Microgram-Profiles";
+	public static String SERVICE = "Microgram-Posts";
 
 	protected Map<String, Post> posts = new ConcurrentHashMap<>();
 	protected Map<String, Set<String>> likes = new ConcurrentHashMap<>();
