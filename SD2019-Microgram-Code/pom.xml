@@ -82,11 +82,6 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>sd2019</groupId>
-			<artifactId>sd19-tp1-api</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 		</dependency>
