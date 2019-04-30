@@ -158,7 +158,7 @@ public class JavaPosts implements Posts {
 			return error(NOT_FOUND);
 	}
 
-	// pedir feedback , (parece bem)
+	
 	@Override
 	public Result<List<String>> getFeed(String userId) {
 		try {

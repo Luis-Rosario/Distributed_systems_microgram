@@ -4,12 +4,9 @@ import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.CONFLICT;
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
-import static microgram.api.java.Result.ErrorCode.INTERNAL_ERROR;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,17 +14,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import discovery.Discovery;
 import kakfa.KafkaPublisher;
 import kakfa.KafkaSubscriber;
 import kakfa.KafkaUtils;
 import microgram.api.Profile;
 import microgram.api.java.Posts;
-import microgram.api.java.Profiles;
 import microgram.api.java.Result;
-import microgram.api.java.Result.ErrorCode;
-import microgram.impl.clt.rest.RestPostsClient;
-import microgram.impl.srv.java.JavaPosts.PostsEventKeys;
 import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles extends RestResource implements microgram.api.java.Profiles {
