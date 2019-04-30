@@ -110,7 +110,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				.collect( Collectors.toList()));
 	}
 
-	@Override //updated follower/following count
+	@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {		
 		Set<String> s1 = following.get( userId1 );
 		Set<String> s2 = followers.get( userId2 );

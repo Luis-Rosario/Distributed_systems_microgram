@@ -13,7 +13,6 @@ import javax.ws.rs.core.Response.Status;
 
 import discovery.Discovery;
 import microgram.api.Post;
-import microgram.api.Profile;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
 import microgram.api.rest.RestPosts;

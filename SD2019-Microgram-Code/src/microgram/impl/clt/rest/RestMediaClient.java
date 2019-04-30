@@ -14,7 +14,6 @@ import discovery.Discovery;
 import microgram.api.java.Media;
 import microgram.api.java.Result;
 import microgram.api.rest.RestMediaStorage;
-import microgram.api.rest.RestPosts;
 
 public class RestMediaClient extends RestClient implements Media {
 

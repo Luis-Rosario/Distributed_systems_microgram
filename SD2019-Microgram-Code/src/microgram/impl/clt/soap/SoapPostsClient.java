@@ -13,7 +13,6 @@ import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
 import microgram.api.soap.SoapPosts;
-import microgram.api.soap.SoapProfiles;
 import microgram.impl.clt.soap.SoapClient;
 
 public class SoapPostsClient

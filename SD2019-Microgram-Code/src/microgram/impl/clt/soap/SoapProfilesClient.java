@@ -15,7 +15,6 @@ import discovery.Discovery;
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
-import microgram.api.soap.SoapPosts;
 import microgram.api.soap.SoapProfiles;
 
 

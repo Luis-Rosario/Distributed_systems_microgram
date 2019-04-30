@@ -36,7 +36,7 @@ public class JavaPosts implements Posts {
 	protected Map<String, Set<String>> likes = new ConcurrentHashMap<>();
 	protected Map<String, Set<String>> userPosts = new ConcurrentHashMap<>();
 
-	Profiles profileClient = null; // DIY Code
+	Profiles profileClient = null;
 
 	public static final String POSTS_EVENTS = "Microgram-PostsEvents";
 
@@ -66,7 +66,6 @@ public class JavaPosts implements Posts {
 	}
 
 	@Override
-	// eventualmente tratar de apagar do media storage com o kafka
 	public Result<Void> deletePost(String postId) {
 		Post post = posts.get(postId);
 
@@ -84,26 +83,48 @@ public class JavaPosts implements Posts {
 	}
 
 	@Override
-	// tenho de por no media storage com o kafka?? (incrementar o contador) verificar userId
 	public Result<String> createPost(Post post) {
-		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
-		if (posts.putIfAbsent(postId, post) == null) {
 
-			likes.put(postId, new HashSet<>());
+		String ownerId = post.getOwnerId();
 
-			Set<String> posts = userPosts.get(post.getOwnerId());
-			if (posts == null)
-				userPosts.put(post.getOwnerId(), posts = new LinkedHashSet<>());
+		if (profileClient == null) {
+			try {
+				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) SERVICE, (int) 1)[0]);
 
-			posts.add(postId);
+			} catch (IOException e) {
 
-			kafka.publish(POSTS_EVENTS, PostsEventKeys.CREATEPOST.name(), post.getOwnerId());
-			kafka.publish(POSTS_EVENTS, PostsEventKeys.SUCCESS.name(), post.getMediaUrl());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(profileClient.getProfile(ownerId).isOK()) {
+
+			String postId = Hash.of(ownerId, post.getMediaUrl());
+			if (posts.putIfAbsent(postId, post) == null) {
+
+				likes.put(postId, new HashSet<>());
+
+				Set<String> posts = userPosts.get(ownerId);
+				if (posts == null)
+					userPosts.put(ownerId, posts = new LinkedHashSet<>());
+
+				posts.add(postId);
+
+				kafka.publish(POSTS_EVENTS, PostsEventKeys.CREATEPOST.name(), ownerId);
+				kafka.publish(POSTS_EVENTS, PostsEventKeys.SUCCESS.name(), post.getMediaUrl());
+
+			}
+			return ok(postId);
 
 		}
-		return ok(postId);
-	}
 
+		else {
+			return error(NOT_FOUND);	
+		}
+
+	}
+	
 	@Override
 	public Result<Void> like(String postId, String userId, boolean isLiked) {
 
@@ -153,7 +174,7 @@ public class JavaPosts implements Posts {
 			return error(NOT_FOUND);
 	}
 
-	
+
 	@Override
 	public Result<List<String>> getFeed(String userId) {
 		try {
@@ -195,21 +216,21 @@ public class JavaPosts implements Posts {
 		subscriber.consume((topic, key, value) -> {
 			switch (key) {
 			case "DELETEPROFILE":
-					Result<List<String>> posts = getPosts(value);
-					if (posts.isOK()) {
-						for (String post : posts.value()) {
-							deletePost(post);
+				Result<List<String>> posts = getPosts(value);
+				if (posts.isOK()) {
+					for (String post : posts.value()) {
+						deletePost(post);
+					}
+				}
+
+				for(Post post: this.posts.values()) {
+					for(String userLike: likes.get(post.getPostId())) {
+						if(userLike.equals(value)) {
+							likes.get(post.getPostId()).remove(userLike);
+							post.setLikes(likes.size());
 						}
 					}
-				
-					for(Post post: this.posts.values()) {
-						for(String userLike: likes.get(post.getPostId())) {
-							if(userLike.equals(value)) {
-								likes.get(post.getPostId()).remove(userLike);
-								post.setLikes(likes.size());
-							}
-						}
-					}
+				}
 			}
 		});
 	}

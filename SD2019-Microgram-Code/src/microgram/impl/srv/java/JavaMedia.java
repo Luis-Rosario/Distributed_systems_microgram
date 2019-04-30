@@ -98,7 +98,6 @@ public class JavaMedia implements Media {
 		}
 	}
 
-
 	@Override
 	public Result<Void> delete(String id) {
 		try {
