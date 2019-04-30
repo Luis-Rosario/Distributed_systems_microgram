@@ -1,10 +1,14 @@
 package microgram.impl.clt.soap;
 
-import discovery.Discovery;
-import java.io.IOException;
+
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
+
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service;
+
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
@@ -16,6 +20,8 @@ extends SoapClient
 implements Posts {
     public static final String SERVICE = "Microgram-Posts";
     SoapPosts impl;
+    private static final String WSDL = "?wsdl";
+
 
     public SoapPostsClient(URI serverUri) {
         super(serverUri);
@@ -50,6 +56,17 @@ implements Posts {
     }
     
     private SoapPosts impl() {
-        return this.impl;
+    	if( impl == null ) {
+			try {
+				QName QNAME = new QName(SoapPosts.NAMESPACE, SoapPosts.NAME);		
+				Service service;
+				service = Service.create( new URL(super.uri.toString() + WSDL), QNAME);
+				impl = service.getPort( microgram.api.soap.SoapPosts.class );
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}	
+		}
+		return impl;
+
     }
 }
