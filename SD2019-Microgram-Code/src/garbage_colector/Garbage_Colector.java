@@ -1,4 +1,4 @@
-package garbage_colector;
+/*package garbage_colector;
 
 import java.util.Arrays;
 import java.util.List;
@@ -117,3 +117,4 @@ public class Garbage_Colector {
 	
 	
 }
+*/

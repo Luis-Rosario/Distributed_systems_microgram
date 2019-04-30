@@ -7,11 +7,9 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import static microgram.api.java.Result.ErrorCode.INTERNAL_ERROR;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -29,9 +27,6 @@ import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.impl.clt.java.ClientFactory;
-import microgram.impl.clt.rest.RestPostsClient;
-import microgram.impl.clt.rest.RestProfilesClient;
-import microgram.impl.srv.java.JavaMedia.MediaEventKeys;
 import utils.Hash;
 
 public class JavaPosts implements Posts {
@@ -163,7 +158,7 @@ public class JavaPosts implements Posts {
 	public Result<List<String>> getFeed(String userId) {
 		try {
 			if (profileClient == null)
-				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) SERVICE, (int) 1)[0]); // new URI("http://172.20.0.6:8887/soap")
+				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) SERVICE, (int) 1)[0]);
 
 			Result<Set<String>> foll = profileClient.getfollowing(userId);
 
