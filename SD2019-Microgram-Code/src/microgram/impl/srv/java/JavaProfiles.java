@@ -8,7 +8,9 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -188,8 +190,26 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 	@Override
 	public Result<List<Profile>> search(String prefix) {
-		return ok(users.values().stream().filter(p -> p.getUserId().startsWith(prefix)).collect(Collectors.toList()));
+		if (aux.length == 1) {
+			return ok(users.values().stream().filter(p -> p.getUserId().startsWith(prefix)).collect(Collectors.toList()));
+		}
+		else {
+			List<Profile> res = new ArrayList<>();
+
+			for(int i = 0; i< aux.length; i++) {
+				if(i== myN) {
+					res.addAll(users.values().stream().filter(p -> p.getUserId().startsWith(prefix)).collect(Collectors.toList()));
+				}
+				else {
+					if(	ClientFactory.getProfilesClient(aux[i]).search(prefix).isOK()) {
+						res.addAll(ClientFactory.getProfilesClient(aux[i]).search(prefix).value());
+					}
+				}
+			}
+			return ok(res);
+		}	
 	}
+
 
 	@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
@@ -227,19 +247,19 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			Profile u2 = p2.value();
 			Set<String> s1 = getfollowing(u1.getUserId()).value();
 			Set<String> s2 = getfollowers(u2.getUserId()).value();
-			
+
 			if (s1 != null && s2 != null)
-			System.err.println("s1  = " + s1.size() + " s2 -> " + s2.size());
+				System.err.println("s1  = " + s1.size() + " s2 -> " + s2.size());
 
 			if (isFollowing) {
 				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
 				if (!added1 || !added2)
 					return error(CONFLICT);
-				
+
 				u1.setFollowing(u1.getFollowing() - 1);
 				u2.setFollowers(u2.getFollowers() - 1);
-				
-				
+
+
 				// set
 				setfollowing(u1.getUserId(), s1);
 				setfollowers(u2.getUserId(),s2);
@@ -315,31 +335,37 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		}
 	}
 
-	private void listen() {
-		List<String> topics = Arrays.asList(JavaPosts.POSTS_EVENTS);
 
-		KafkaSubscriber subscriber = new KafkaSubscriber(topics);
+		private void listen() {
+			List<String> topics = Arrays.asList(JavaPosts.POSTS_EVENTS);
 
-		subscriber.consume((topic, key, value) -> {
-			Profile p = null;
-			switch (key) {
-			case "DELETEPOSTUSER":
-				p = getProfile(value).value();
-				p.setPosts(p.getPosts() - 1);
-				break;
-			case "CREATEPOST":
-				p = getProfile(value).value();
-				p.setPosts(p.getPosts() + 1);
-				break;
-			}
-		});
-	}
+			KafkaSubscriber subscriber = new KafkaSubscriber(topics);
 
-	private int resourceServerLocation(String id) {
-		// System.err.println("id: " + id +"->" + Math.abs(id.hashCode() % aux.length));
-		return Math.abs(id.hashCode() % aux.length);
+			subscriber.consume((topic, key, value) -> {
+				Profile p = null;
+				switch (key) {
+				case "DELETEPOSTUSER":
+					p = getProfile(value).value();
+					p.setPosts(p.getPosts() - 1);
+					break;
+				case "CREATEPOST":
+					p = getProfile(value).value();
+					p.setPosts(p.getPosts() + 1);
+					break;
+				}
+			});
+		}
 
-	}
+		private int resourceServerLocation(String id) {
+			// System.err.println("id: " + id +"->" + Math.abs(id.hashCode() % aux.length));
+			return Math.abs(id.hashCode() % aux.length);
+
+		}
+
+
+
+	
+
 
 	@Override
 	public Result<Void> setfollowing(String userId,Set<String> following) {
@@ -370,3 +396,4 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	}
 
 }
+
