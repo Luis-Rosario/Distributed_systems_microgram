@@ -43,6 +43,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	public static final String PROFILES_EVENTS = "Microgram-ProfilesEvents";
 
 	private int myN = 0;
+	private boolean isPartition;
 	private URI[] aux;
 
 	enum ProfilesEventKeys {
@@ -57,9 +58,11 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		new Thread(() -> {
 			listen();
 		}).start();
+		isPartition =false;
 	}
 
 	public JavaProfiles(int n, String server_uri) {
+		isPartition = true;
 		this.kafka = new KafkaPublisher();
 		KafkaUtils.createTopics(Arrays.asList(JavaProfiles.PROFILES_EVENTS));
 		new Thread(() -> {
@@ -91,9 +94,9 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 						myN = i;
 
 				}
-				System.err.println("Crise ident?: " + myN);
-				for (URI a : aux)
-					System.err.println(" URI -> " + a.toString());
+				//System.err.println("Crise ident?: " + myN);
+				//for (URI a : aux)
+					//System.err.println(" URI -> " + a.toString());
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -113,7 +116,8 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		if (pos != myN) {
 			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).getProfile(userId);
 
-		} else {
+		} 
+		else {
 			Profile res = users.get(userId);
 			if (res == null)
 				return error(NOT_FOUND);
@@ -123,20 +127,15 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			return ok(res);
 		}
 	}
+ 
+		
 
 	@Override
 	public Result<Void> createProfile(Profile profile) {
 		int pos = resourceServerLocation(profile.getUserId());
-		// System.err.println( "POS = " + pos + " //// myN -> " + myN + "
-		// /////////////// NAME-> " + profile.getUserId());
 		if (pos == myN) {
-			// System.err.println("mandei in");
 			Profile res = users.putIfAbsent(profile.getUserId(), profile);
-
-			// System.err.println(resourceServerLocation(profile.getUserId()) + " DENTRO DE
-			// MIM ");
 			if (res != null) {
-				// System.err.println("asdas");
 				return error(CONFLICT);
 			}
 
@@ -145,7 +144,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			kafka.publish(PROFILES_EVENTS, ProfilesEventKeys.SUCCESS.name(), profile.getPhotoUrl());
 			return ok();
 		} else {
-			// System.err.println("mandei out");
 			return ClientFactory.getProfilesClient(aux[resourceServerLocation(profile.getUserId())])
 					.createProfile(profile);
 		}
@@ -190,8 +188,8 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 	@Override
 	public Result<List<Profile>> search(String prefix) {
-		if (aux.length == 1) {
-			return ok(users.values().stream().filter(p -> p.getUserId().startsWith(prefix)).collect(Collectors.toList()));
+		if (!isPartition) {
+			return localsearch(prefix);
 		}
 		else {
 			List<Profile> res = new ArrayList<>();
@@ -218,7 +216,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 	@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
-		if (aux.length == 1) {
+		if (!isPartition) {
 			Set<String> s1 = following.get(userId1);
 			Set<String> s2 = followers.get(userId2);
 			Profile u1 = users.get(userId1);
@@ -228,7 +226,9 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				return error(NOT_FOUND);
 
 			if (isFollowing) {
+				
 				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
+				
 				if (!added1 || !added2)
 					return error(CONFLICT);
 				u1.setFollowing(u1.getFollowing() - 1);
@@ -242,35 +242,35 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			}
 			return ok();
 		} else {
+			
 			Result<Profile> p1 = getProfile(userId1);
 			Result<Profile> p2 = getProfile(userId2);
 
-			if (!p1.isOK() || !p2.isOK()) {
-				System.err.println("NOT OKAY 249");
+			if (!p1.isOK() || !p2.isOK())
 				return error(NOT_FOUND);
-			}	
 
 			Profile u1 = p1.value();
 			Profile u2 = p2.value();
 			Set<String> s1 = getfollowing(userId1).value();
 			Set<String> s2 = getfollowers(userId2).value();
 
-
+			
 			if (isFollowing) {
 				System.err.println("s1 has s2?: " + s1.contains(userId2));
-                boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
-                System.err.println("now?: " + s1.contains(userId2));
+				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
+				System.err.println("now?: " + s1.contains(userId2));
 				if (!added1 || !added2)
 					return error(CONFLICT);
+
+				
 			} else {
 				boolean removed1 = s1.remove(userId2), removed2 = s2.remove(userId1);
-				if (!removed1 || !removed2) {
-					System.err.println("NOT OKAY 277");
+				if (!removed1 || !removed2)
 					return error(NOT_FOUND);
-				}
+				
 			}
-			// set
-			setfollowing(userId1, s1);
+			// set+
+			setfollowing(userId1,s1);
 			setfollowers(userId2,s2);
 			return ok();
 		}
@@ -278,7 +278,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 	@Override
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
-		if (aux.length == 1) {
+		if (!isPartition) {
 			Set<String> s1 = following.get(userId1);
 			Set<String> s2 = followers.get(userId2);
 
@@ -308,7 +308,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	@Override
 	public Result<Set<String>> getfollowing(String userId) {
 		int pos = resourceServerLocation(userId);
-		if (pos != myN && aux.length > 1) {
+		if (pos != myN && isPartition) {
 			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).getfollowing(userId);
 		} else {
 			if (users.get(userId) != null) {
@@ -355,8 +355,10 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		}
 
 		private int resourceServerLocation(String id) {
-			// System.err.println("id: " + id +"->" + Math.abs(id.hashCode() % aux.length));
+			if (isPartition)
 			return Math.abs(id.hashCode() % aux.length);
+			else
+				return myN;
 
 		}
 

@@ -45,7 +45,7 @@ public class ProfilesRestServer {
 		
 		Discovery.announce(SERVICE, serverURI);
 		
-		if ( n == -1)
+		if ( n == 1)
 		config.register(new RestProfilesResources(serverURI));  
 		else
 		config.register(new RestProfilesResources(serverURI , n)); 
