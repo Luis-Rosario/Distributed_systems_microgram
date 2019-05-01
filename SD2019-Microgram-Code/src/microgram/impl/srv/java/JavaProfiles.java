@@ -91,9 +91,9 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 						myN = i;
 
 				}
-				System.err.println("Crise ident?: " + myN);
-				for (URI a : aux)
-					System.err.println(" URI -> " + a.toString());
+				//System.err.println("Crise ident?: " + myN);
+				//for (URI a : aux)
+					//System.err.println(" URI -> " + a.toString());
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -228,7 +228,9 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				return error(NOT_FOUND);
 
 			if (isFollowing) {
+				
 				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
+				
 				if (!added1 || !added2)
 					return error(CONFLICT);
 				u1.setFollowing(u1.getFollowing() - 1);
@@ -242,6 +244,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			}
 			return ok();
 		} else {
+			
 			Result<Profile> p1 = getProfile(userId1);
 			Result<Profile> p2 = getProfile(userId2);
 
@@ -253,11 +256,13 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			Set<String> s1 = getfollowing(u1.getUserId()).value();
 			Set<String> s2 = getfollowers(u2.getUserId()).value();
 
-			if (s1 != null && s2 != null)
-				System.err.println("s1  = " + s1.size() + " s2 -> " + s2.size());
+			/*if (s1 != null && s2 != null)
+				System.err.println("s1  = " + s1.size() + " s2 -> " + s2.size());*/
 
 			if (isFollowing) {
+				System.err.println("s1 has s2?: " + s1.contains(userId2));
 				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
+				System.err.println("now?: " + s1.contains(userId2));
 				if (!added1 || !added2)
 					return error(CONFLICT);
 
@@ -271,7 +276,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				u2.setFollowers(u2.getFollowers() + 1);
 			}
 			// set
-			setfollowing(u1.getUserId(), s1);
+			setfollowing(u1.getUserId(),s1);
 			setfollowers(u2.getUserId(),s2);
 			return ok();
 		}
