@@ -183,7 +183,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				return error(NOT_FOUND);
 			}
 		}
-		
+
 	}
 
 	@Override
@@ -231,11 +231,16 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 	@Override
 	public Result<Set<String>> getfollowing(String userId) {
-		if (users.get(userId) != null) {
-			return ok(following.get(userId));
-		} else
-			return error(NOT_FOUND);
-
+		int pos = resourceServerLocation(userId);
+		if (pos != myN) {
+			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).getFeed(userId);
+		}
+		else {
+			if (users.get(userId) != null) {
+				return ok(following.get(userId));
+			} else
+				return error(NOT_FOUND);
+		}
 	}
 
 	private void listen() {
