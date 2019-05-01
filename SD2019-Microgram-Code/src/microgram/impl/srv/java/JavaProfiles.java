@@ -151,7 +151,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 	@Override
 	public Result<Void> deleteProfile(String userId) {
-		int pos = resourceServerLocation(profile.getUserId());
+		int pos = resourceServerLocation(userId);
 		if (pos != myN) {
 			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).deleteProfile(userId);
 		}
