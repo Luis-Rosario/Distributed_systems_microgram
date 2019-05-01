@@ -41,6 +41,11 @@ public interface RestProfiles {
 	@Produces(MediaType.APPLICATION_JSON)
 	List<Profile> search( @QueryParam("query") String name );
 	
+	@GET
+	@Path("/localsearch")
+	@Produces(MediaType.APPLICATION_JSON)
+	List<Profile> localsearch( @QueryParam("query") String name );
+	
 	@DELETE
 	@Path("/{userId}")
 	void deleteProfile( @PathParam("userId") String userId );
@@ -63,5 +68,14 @@ public interface RestProfiles {
 	@Path("/getfollowers/{userId}")
 	Set<String> getfollowers(@PathParam ("userId") String userId);
 	
+	@PUT
+	@Path("/setfollowing/{userId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	void setfollowing(@PathParam ("userId") String userId, Set<String> following);
+	
+	@PUT
+	@Path("/setfollowers/{userId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	void setfollowers(@PathParam ("userId") String userId , Set<String> followers);
 	
 }

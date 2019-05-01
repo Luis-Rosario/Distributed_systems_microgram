@@ -121,14 +121,32 @@ public class RestProfilesClient extends RestClient implements Profiles {
 
 	@Override
 	public Result<Void> setfollowing(String userId, Set<String> following) {
-		// TODO Auto-generated method stub
-		return null;
+		Response r = target.path("setfollowing").path(userId)
+				.request()
+				.post( Entity.entity( following, MediaType.APPLICATION_JSON));
+
+	 //	System.err.println(r);
+		return super.verifyResponse(r, Status.NO_CONTENT);	
 	}
 
 	@Override
 	public Result<Void> setfollowers(String userId, Set<String> followers) {
-		// TODO Auto-generated method stub
-		return null;
+		Response r = target.path("setfollowers").path(userId)
+				.request()
+				.post( Entity.entity( followers, MediaType.APPLICATION_JSON));
+
+	 //	System.err.println(r);
+		return super.verifyResponse(r, Status.NO_CONTENT);	
+	}
+
+	@Override
+	public Result<List<Profile>> localsearch(String prefix) {
+		Response  r = target.path("localsearch").queryParam("query", prefix)
+				.request()
+				.accept(MediaType.APPLICATION_JSON)
+				.get(); 
+
+		return super.responseContents(r, Status.OK, new GenericType<List<Profile>>() {});
 	}
 
 

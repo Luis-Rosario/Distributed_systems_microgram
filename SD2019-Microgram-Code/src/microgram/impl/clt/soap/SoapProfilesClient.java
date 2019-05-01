@@ -101,4 +101,10 @@ public class SoapProfilesClient extends SoapClient implements Profiles {
 		return null;
 	}
 
+	@Override
+	public Result<List<Profile>> localsearch(String prefix) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

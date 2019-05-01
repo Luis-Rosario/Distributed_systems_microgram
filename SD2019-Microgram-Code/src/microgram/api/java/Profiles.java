@@ -39,6 +39,9 @@ public interface Profiles {
 	 * @return result of (OK, List<Profile>); an empty list if the search yields no profiles
 	 */
 	Result<List<Profile>> search( String prefix );
+	
+	
+	Result<List<Profile>> localsearch( String prefix );
 
 	/**
 	 * Causes a profile to follow or stop following another.
