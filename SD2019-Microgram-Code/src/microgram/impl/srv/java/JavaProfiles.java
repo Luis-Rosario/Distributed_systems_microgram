@@ -238,6 +238,9 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				
 				u1.setFollowing(u1.getFollowing() - 1);
 				u2.setFollowers(u2.getFollowers() - 1);
+				
+				
+				// set
 			} else {
 				boolean removed1 = s1.remove(userId2), removed2 = s2.remove(userId1);
 				if (!removed1 || !removed2)
