@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -131,8 +132,8 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				return error(CONFLICT);
 			}
 
-			followers.put(profile.getUserId(), ConcurrentHashMap.newKeySet());
-			following.put(profile.getUserId(), ConcurrentHashMap.newKeySet());
+			followers.put(profile.getUserId(),  new HashSet<>());
+			following.put(profile.getUserId(),  new HashSet<>());
 			kafka.publish(PROFILES_EVENTS, ProfilesEventKeys.SUCCESS.name(), profile.getPhotoUrl());
 			return ok();
 		} else {
