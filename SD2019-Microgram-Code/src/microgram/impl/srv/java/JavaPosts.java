@@ -159,7 +159,7 @@ public class JavaPosts implements Posts {
 	public Result<List<String>> getPosts(String userId) {
 		if (profileClient == null)
 			try {
-				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) SERVICE, (int) 1)[0]);
+				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) JavaProfiles.SERVICE, (int) 1)[0]);
 			} catch (Exception e) {
 				return error(INTERNAL_ERROR);
 			}
@@ -179,7 +179,7 @@ public class JavaPosts implements Posts {
 	public Result<List<String>> getFeed(String userId) {
 		try {
 			if (profileClient == null)
-				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) SERVICE, (int) 1)[0]);
+				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) JavaProfiles.SERVICE, (int) 1)[0]);
 
 			Result<Set<String>> foll = profileClient.getfollowing(userId);
 
