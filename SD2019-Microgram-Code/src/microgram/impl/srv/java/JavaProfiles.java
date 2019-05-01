@@ -151,32 +151,39 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 	@Override
 	public Result<Void> deleteProfile(String userId) {
-		Profile profileToDelete = users.get(userId);
-
-		if (profileToDelete != null) {
-			users.remove(userId);
-			Set<String> profileFollows = following.remove(userId);
-			Set<String> profileFollowers = followers.remove(userId);
-			Profile res = null;
-
-			for (String a : profileFollows) {
-				followers.get(a).remove(userId);
-				res = users.get(a);
-				res.setFollowers(res.getFollowers() - 1);
-			}
-
-			for (String a : profileFollowers) {
-				following.get(a).remove(userId);
-				res = users.get(a);
-				res.setFollowing(res.getFollowing() - 1);
-			}
-			kafka.publish(PROFILES_EVENTS, ProfilesEventKeys.DELETEPROFILE.name(), userId);
-			return ok();
+		int pos = resourceServerLocation(profile.getUserId());
+		if (pos != myN) {
+			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).deleteProfile(userId);
 		}
-
 		else {
-			return error(NOT_FOUND);
+			Profile profileToDelete = users.get(userId);
+
+			if (profileToDelete != null) {
+				users.remove(userId);
+				Set<String> profileFollows = following.remove(userId);
+				Set<String> profileFollowers = followers.remove(userId);
+				Profile res = null;
+
+				for (String a : profileFollows) {
+					followers.get(a).remove(userId);
+					res = users.get(a);
+					res.setFollowers(res.getFollowers() - 1);
+				}
+
+				for (String a : profileFollowers) {
+					following.get(a).remove(userId);
+					res = users.get(a);
+					res.setFollowing(res.getFollowing() - 1);
+				}
+				kafka.publish(PROFILES_EVENTS, ProfilesEventKeys.DELETEPROFILE.name(), userId);
+				return ok();
+			}
+
+			else {
+				return error(NOT_FOUND);
+			}
 		}
+		
 	}
 
 	@Override
