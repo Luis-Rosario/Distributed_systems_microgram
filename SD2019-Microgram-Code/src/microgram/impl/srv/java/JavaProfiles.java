@@ -42,8 +42,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 	private int myN = 0;
 	private URI[] aux;
-	
-	
+
 	enum ProfilesEventKeys {
 		DELETEPROFILE, SUCCESS
 	};
@@ -68,36 +67,32 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		if (n > 1) {
 			try {
 				long start = System.currentTimeMillis();
-				System.err.println(" n = " + n);
+				// System.err.println(" n = " + n);
 				for (;;) {
 					aux = Discovery.findUrisOf(ProfilesRestServer.SERVICE, n);
-					System.err.println("DISCOVERY AGAIN -> " + aux);
-					if (aux != null)
-						System.err.println("AUX SIZE = " + aux.length);
-					
+					// System.err.println("DISCOVERY AGAIN -> " + aux);
+
 					if (System.currentTimeMillis() - start < 20000) {
 						if (aux != null) {
 							if (aux.length == n)
 								break;
 						}
-					}
-					else {
+					} else {
 						throw new IOException();
-					}	
+					}
 
 				}
-				System.err.println("OUT OF CYCLE");
+				// System.err.println("OUT OF CYCLE");
 				Arrays.sort(aux);
-				for ( int i = 0 ; i  < aux.length ; i++) {
-					if ( aux[i].toString().equals(server_uri)) // verificar se o equals funciona
+				for (int i = 0; i < aux.length; i++) {
+					if (aux[i].toString().equals(server_uri)) // verificar se o equals funciona
 						myN = i;
-					
-					
+
 				}
 				System.err.println("Crise ident?: " + myN);
-				for ( URI a : aux)
-				System.err.println(" URI -> " + a.toString());
-				
+				for (URI a : aux)
+					System.err.println(" URI -> " + a.toString());
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (URISyntaxException e) {
@@ -110,37 +105,35 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 	@Override
 	public Result<Profile> getProfile(String userId) {
-		int pos  = resourceServerLocation(userId);
+		int pos = resourceServerLocation(userId);
+		System.err.println("POS = " + pos + "     //// myN -> " + myN + " /////////////// NAME-> " + userId);
 		if (pos != myN) {
-		 return	 new RestProfilesClient(aux[pos]).getProfile(userId);
-			
-		}
-		else {
-		Profile res = users.get(userId);
-		if (res == null)
-			return error(NOT_FOUND);
+			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).getProfile(userId);
 
-		res.setFollowers(followers.get(userId).size());
-		res.setFollowing(following.get(userId).size());
-		return ok(res);
+		} else {
+			Profile res = users.get(userId);
+			if (res == null)
+				return error(NOT_FOUND);
+
+			res.setFollowers(followers.get(userId).size());
+			res.setFollowing(following.get(userId).size());
+			return ok(res);
 		}
 	}
 
-	
-	 
-	
 	@Override
 	public Result<Void> createProfile(Profile profile) {
-		try {
-		int pos  = resourceServerLocation(profile.getUserId());
-		System.err.println( "POS = " + pos + "     //// myN -> " + myN + " /////////////// NAME-> " + profile.getUserId());
+		int pos = resourceServerLocation(profile.getUserId());
+		// System.err.println( "POS = " + pos + " //// myN -> " + myN + "
+		// /////////////// NAME-> " + profile.getUserId());
 		if (pos == myN) {
-			//System.err.println("mandei in");
+			// System.err.println("mandei in");
 			Profile res = users.putIfAbsent(profile.getUserId(), profile);
-			
-			//System.err.println(resourceServerLocation(profile.getUserId()) + " DENTRO DE MIM ");
+
+			// System.err.println(resourceServerLocation(profile.getUserId()) + " DENTRO DE
+			// MIM ");
 			if (res != null) {
-				System.err.println("asdas");
+				// System.err.println("asdas");
 				return error(CONFLICT);
 			}
 
@@ -148,18 +141,13 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			following.put(profile.getUserId(), ConcurrentHashMap.newKeySet());
 			kafka.publish(PROFILES_EVENTS, ProfilesEventKeys.SUCCESS.name(), profile.getPhotoUrl());
 			return ok();
-			}	
-		else {
-			//System.err.println("mandei out");
-			 return	ClientFactory.getProfilesClient(aux[resourceServerLocation(profile.getUserId())]).createProfile(profile);
+		} else {
+			// System.err.println("mandei out");
+			return ClientFactory.getProfilesClient(aux[resourceServerLocation(profile.getUserId())])
+					.createProfile(profile);
+		}
+
 	}
-		}
-		catch(Exception e ) {
-			System.err.println("PUTA DA EXCECAO");
-			return error(CONFLICT);
-			
-		}
-	}		
 
 	@Override
 	public Result<Void> deleteProfile(String userId) {
@@ -262,12 +250,11 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			}
 		});
 	}
-	
-	 private int resourceServerLocation(String id) {
-		//System.err.println("id: " + id +"->" + Math.abs(id.hashCode() %  aux.length));
-		//return Math.abs(id.hashCode() %  aux.length);
-		 return 0;
-		
+
+	private int resourceServerLocation(String id) {
+		// System.err.println("id: " + id +"->" + Math.abs(id.hashCode() % aux.length));
+		return Math.abs(id.hashCode() % aux.length);
+
 	}
 
 }
