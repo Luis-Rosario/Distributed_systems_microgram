@@ -363,7 +363,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			if (users.get(userId) != null) {
 				return ok(followers.get(userId));
 			} else
-				return error(NOT_FOUND);
+				return error(NOT_FOUND); 
 		}
 	}
 
@@ -388,8 +388,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).setfollowers(userId,followers);
 		} else {
 			if (users.get(userId) != null) {
-				if (this.followers.containsKey(userId))
-					this.followers.put(userId, followers);
+				this.followers.put(userId, followers);
 				return ok();
 			} else
 				return error(NOT_FOUND);
