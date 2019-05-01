@@ -43,7 +43,7 @@ public class ProfilesRestServer {
 		
 		ResourceConfig config = new ResourceConfig();
 		
-		
+		Discovery.announce(SERVICE, serverURI);
 		
 		if ( n == -1)
 		config.register(new RestProfilesResources(serverURI));  
@@ -58,6 +58,6 @@ public class ProfilesRestServer {
 		Log.info(String.format("%s Server ready @ %s\n",  SERVICE, serverURI));
 		
 		 System.err.println("n = " + n);
-		Discovery.announce(SERVICE, serverURI);
+		
 	}
 }
