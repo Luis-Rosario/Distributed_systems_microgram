@@ -40,7 +40,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 	public static final String PROFILES_EVENTS = "Microgram-ProfilesEvents";
 
-	private int myN = -1;
+	private int myN = 0;
 	private URI[] aux;
 	
 	
@@ -112,8 +112,8 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	public Result<Profile> getProfile(String userId) {
 		int pos  = resourceServerLocation(userId);
 		if (pos != myN) {
-			 new RestProfilesClient(aux[pos]).getProfile(userId);
-			 return ok();
+		 return	 new RestProfilesClient(aux[pos]).getProfile(userId);
+			
 		}
 		else {
 		Profile res = users.get(userId);
@@ -126,17 +126,23 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		}
 	}
 
+	
+	 
+	
 	@Override
 	public Result<Void> createProfile(Profile profile) {
+		try {
 		int pos  = resourceServerLocation(profile.getUserId());
 		System.err.println( "POS = " + pos + "     //// myN -> " + myN + " /////////////// NAME-> " + profile.getUserId());
 		if (pos == myN) {
-			System.err.println("mandei in");
+			//System.err.println("mandei in");
 			Profile res = users.putIfAbsent(profile.getUserId(), profile);
 			
 			//System.err.println(resourceServerLocation(profile.getUserId()) + " DENTRO DE MIM ");
-			if (res != null)
+			if (res != null) {
+				System.err.println("asdas");
 				return error(CONFLICT);
+			}
 
 			followers.put(profile.getUserId(), ConcurrentHashMap.newKeySet());
 			following.put(profile.getUserId(), ConcurrentHashMap.newKeySet());
@@ -144,9 +150,15 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			return ok();
 			}	
 		else {
-			System.err.println("mandei out");
-			 return	new RestProfilesClient(aux[pos]).createProfile(profile);
+			//System.err.println("mandei out");
+			 return	ClientFactory.getProfilesClient(aux[resourceServerLocation(profile.getUserId())]).createProfile(profile);
 	}
+		}
+		catch(Exception e ) {
+			System.err.println("PUTA DA EXCECAO");
+			return error(CONFLICT);
+			
+		}
 	}		
 
 	@Override
@@ -253,7 +265,8 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	
 	 private int resourceServerLocation(String id) {
 		//System.err.println("id: " + id +"->" + Math.abs(id.hashCode() %  aux.length));
-		return Math.abs(id.hashCode() %  aux.length);
+		//return Math.abs(id.hashCode() %  aux.length);
+		 return 0;
 		
 	}
 

@@ -47,7 +47,8 @@ public class RestProfilesClient extends RestClient implements Profiles {
 				.request()
 				.post( Entity.entity( profile, MediaType.APPLICATION_JSON));
 
-		return super.verifyResponse(r, Status.OK);	
+		System.err.println(r);
+		return super.verifyResponse(r, Status.NO_CONTENT);	
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public class RestProfilesClient extends RestClient implements Profiles {
 				.request()
 				.delete() ;
 
-		return super.verifyResponse(r, Status.OK);
+		return super.verifyResponse(r, Status.NO_CONTENT);
 	}
 
 	@Override
@@ -79,7 +80,7 @@ public class RestProfilesClient extends RestClient implements Profiles {
 				.accept(MediaType.APPLICATION_JSON)
 				.put(Entity.entity(isFollowing, MediaType.APPLICATION_JSON)); 
 
-		return super.verifyResponse(r, Status.OK);	
+		return super.verifyResponse(r, Status.NO_CONTENT);	
 	}
 
 
