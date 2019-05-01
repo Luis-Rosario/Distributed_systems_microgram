@@ -38,7 +38,7 @@ public class RestProfilesClient extends RestClient implements Profiles {
 				.accept(MediaType.APPLICATION_JSON)
 				.get();
 		
-		System.err.println(r);
+		//System.err.println(r);
 		return super.responseContents(r, Status.OK, new GenericType<Profile>() {});
 	}
 

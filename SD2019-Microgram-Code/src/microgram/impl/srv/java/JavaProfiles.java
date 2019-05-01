@@ -227,11 +227,15 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			Profile u2 = p2.value();
 			Set<String> s1 = getfollowing(u1.getUserId()).value();
 			Set<String> s2 = getfollowers(u2.getUserId()).value();
+			
+			if (s1 != null && s2 != null)
+			System.err.println("s1  = " + s1.size() + " s2 -> " + s2.size());
 
 			if (isFollowing) {
 				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
 				if (!added1 || !added2)
 					return error(CONFLICT);
+				
 				u1.setFollowing(u1.getFollowing() - 1);
 				u2.setFollowers(u2.getFollowers() - 1);
 			} else {
