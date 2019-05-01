@@ -67,6 +67,10 @@ public interface Profiles {
 	 */
 	Result<Set<String>> getfollowing(String userId);
 	
+	Result<Void> setfollowing(String userId , Set<String> following);
+	
 	
 	Result<Set<String>> getfollowers(String userId);
+	
+	Result<Void> setfollowers(String userId,Set<String> followers);
 }

@@ -89,4 +89,16 @@ public class SoapProfilesClient extends SoapClient implements Profiles {
 		return null;
 	}
 
+	@Override
+	public Result<Void> setfollowing(String userId, Set<String> following) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Result<Void> setfollowers(String userId, Set<String> followers) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
