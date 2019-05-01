@@ -66,4 +66,7 @@ public interface Profiles {
 	 * @return (OK,Set<String>), NOT_FOUND if the user does not exist
 	 */
 	Result<Set<String>> getfollowing(String userId);
+	
+	
+	Result<Set<String>> getfollowers(String userId);
 }
