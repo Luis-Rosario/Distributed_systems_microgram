@@ -374,8 +374,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).setfollowing(userId,following);
 		} else {
 			if (users.get(userId) != null) {
-				if (this.following.containsKey(userId))
-					this.following.put(userId, following);
+				this.following.put(userId, following);
 				return ok();
 			} else
 				return error(NOT_FOUND);
