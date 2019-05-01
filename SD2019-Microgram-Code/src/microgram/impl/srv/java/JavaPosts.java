@@ -89,7 +89,7 @@ public class JavaPosts implements Posts {
 
 		if (profileClient == null) {
 			try {
-				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) SERVICE, (int) 1)[0]);
+				profileClient = ClientFactory.getProfilesClient(Discovery.findUrisOf((String) JavaProfiles.SERVICE, (int) 1)[0]);
 
 			} catch (IOException e) {
 
@@ -233,6 +233,12 @@ public class JavaPosts implements Posts {
 				}
 			}
 		});
+	}
+	
+	private int resourceServerLocation(String id, int n) {
+		//System.err.println("id: " + id +"->" + Math.abs(id.hashCode() %  aux.length));
+		return Math.abs(id.hashCode() %  n);
+		
 	}
 
 }
