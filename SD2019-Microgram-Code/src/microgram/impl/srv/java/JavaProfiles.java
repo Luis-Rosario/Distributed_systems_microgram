@@ -22,7 +22,11 @@ import kakfa.KafkaSubscriber;
 import kakfa.KafkaUtils;
 import microgram.api.Profile;
 import microgram.api.java.Posts;
+import microgram.api.java.Profiles;
 import microgram.api.java.Result;
+import microgram.impl.clt.java.ClientFactory;
+import microgram.impl.clt.rest.RestProfilesClient;
+import microgram.impl.srv.rest.ProfilesRestServer;
 import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles extends RestResource implements microgram.api.java.Profiles {
@@ -32,12 +36,14 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	protected Map<String, Set<String>> followers = new ConcurrentHashMap<>();
 	protected Map<String, Set<String>> following = new ConcurrentHashMap<>();
 
-	protected Posts postsClient = null;
+	protected Profiles profilesClient = null;
 
 	public static final String PROFILES_EVENTS = "Microgram-ProfilesEvents";
 
 	private int myN = -1;
-
+	private URI[] aux;
+	
+	
 	enum ProfilesEventKeys {
 		DELETEPROFILE, SUCCESS
 	};
@@ -62,21 +68,35 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		if (n > 1) {
 			try {
 				long start = System.currentTimeMillis();
-				URI[] aux = null;
+				System.err.println(" n = " + n);
 				for (;;) {
-					aux = Discovery.findUrisOf((String) "Microgram-Profiles", (int) 1);
-					if (aux.length == n)
-						break;
-					else if (System.currentTimeMillis() - start > 20000)
+					aux = Discovery.findUrisOf(ProfilesRestServer.SERVICE, n);
+					System.err.println("DISCOVERY AGAIN -> " + aux);
+					if (aux != null)
+						System.err.println("AUX SIZE = " + aux.length);
+					
+					if (System.currentTimeMillis() - start < 20000) {
+						if (aux != null) {
+							if (aux.length == n)
+								break;
+						}
+					}
+					else {
 						throw new IOException();
+					}	
+
 				}
+				System.err.println("OUT OF CYCLE");
 				Arrays.sort(aux);
 				for ( int i = 0 ; i  < aux.length ; i++) {
 					if ( aux[i].toString().equals(server_uri)) // verificar se o equals funciona
 						myN = i;
+					
+					
 				}
+				System.err.println("Crise ident?: " + myN);
 				for ( URI a : aux)
-				System.err.println(a.toString());
+				System.err.println(" URI -> " + a.toString());
 				
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -90,6 +110,12 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 	@Override
 	public Result<Profile> getProfile(String userId) {
+		int pos  = resourceServerLocation(userId);
+		if (pos != myN) {
+			 new RestProfilesClient(aux[pos]).getProfile(userId);
+			 return ok();
+		}
+		else {
 		Profile res = users.get(userId);
 		if (res == null)
 			return error(NOT_FOUND);
@@ -97,19 +123,31 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		res.setFollowers(followers.get(userId).size());
 		res.setFollowing(following.get(userId).size());
 		return ok(res);
+		}
 	}
 
 	@Override
 	public Result<Void> createProfile(Profile profile) {
-		Profile res = users.putIfAbsent(profile.getUserId(), profile);
-		if (res != null)
-			return error(CONFLICT);
+		int pos  = resourceServerLocation(profile.getUserId());
+		System.err.println( "POS = " + pos + "     //// myN -> " + myN + " /////////////// NAME-> " + profile.getUserId());
+		if (pos == myN) {
+			System.err.println("mandei in");
+			Profile res = users.putIfAbsent(profile.getUserId(), profile);
+			
+			//System.err.println(resourceServerLocation(profile.getUserId()) + " DENTRO DE MIM ");
+			if (res != null)
+				return error(CONFLICT);
 
-		followers.put(profile.getUserId(), new HashSet<>());
-		following.put(profile.getUserId(), new HashSet<>());
-		kafka.publish(PROFILES_EVENTS, ProfilesEventKeys.SUCCESS.name(), profile.getPhotoUrl());
-		return ok();
+			followers.put(profile.getUserId(), ConcurrentHashMap.newKeySet());
+			following.put(profile.getUserId(), ConcurrentHashMap.newKeySet());
+			kafka.publish(PROFILES_EVENTS, ProfilesEventKeys.SUCCESS.name(), profile.getPhotoUrl());
+			return ok();
+			}	
+		else {
+			System.err.println("mandei out");
+			 return	new RestProfilesClient(aux[pos]).createProfile(profile);
 	}
+	}		
 
 	@Override
 	public Result<Void> deleteProfile(String userId) {
@@ -211,6 +249,12 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				break;
 			}
 		});
+	}
+	
+	 private int resourceServerLocation(String id) {
+		//System.err.println("id: " + id +"->" + Math.abs(id.hashCode() %  aux.length));
+		return Math.abs(id.hashCode() %  aux.length);
+		
 	}
 
 }
