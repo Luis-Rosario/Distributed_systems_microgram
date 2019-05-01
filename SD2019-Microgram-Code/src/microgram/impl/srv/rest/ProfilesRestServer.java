@@ -51,7 +51,7 @@ public class ProfilesRestServer {
 		config.register(new RestProfilesResources(serverURI , n)); 
 		
 		config.register(new GenericExceptionMapper());
-		config.register(new PrematchingRequestFilter());
+		//config.register(new PrematchingRequestFilter());
 		
 		JdkHttpServerFactory.createHttpServer( URI.create(serverURI.replace(ip, "0.0.0.0")), config);
 

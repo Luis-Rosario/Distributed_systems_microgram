@@ -245,34 +245,33 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			Result<Profile> p1 = getProfile(userId1);
 			Result<Profile> p2 = getProfile(userId2);
 
-			if (!p1.isOK() || !p2.isOK())
+			if (!p1.isOK() || !p2.isOK()) {
+				System.err.println("NOT OKAY 249");
 				return error(NOT_FOUND);
+			}	
 
 			Profile u1 = p1.value();
 			Profile u2 = p2.value();
-			Set<String> s1 = getfollowing(u1.getUserId()).value();
-			Set<String> s2 = getfollowers(u2.getUserId()).value();
+			Set<String> s1 = getfollowing(userId1).value();
+			Set<String> s2 = getfollowers(userId2).value();
 
-			if (s1 != null && s2 != null)
-				System.err.println("s1  = " + s1.size() + " s2 -> " + s2.size());
 
 			if (isFollowing) {
-				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
+				System.err.println("s1 has s2?: " + s1.contains(userId2));
+                boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
+                System.err.println("now?: " + s1.contains(userId2));
 				if (!added1 || !added2)
 					return error(CONFLICT);
-
-				u1.setFollowing(u1.getFollowing() - 1);
-				u2.setFollowers(u2.getFollowers() - 1);
 			} else {
 				boolean removed1 = s1.remove(userId2), removed2 = s2.remove(userId1);
-				if (!removed1 || !removed2)
+				if (!removed1 || !removed2) {
+					System.err.println("NOT OKAY 277");
 					return error(NOT_FOUND);
-				u1.setFollowing(u1.getFollowing() + 1);
-				u2.setFollowers(u2.getFollowers() + 1);
+				}
 			}
 			// set
-			setfollowing(u1.getUserId(), s1);
-			setfollowers(u2.getUserId(),s2);
+			setfollowing(userId1, s1);
+			setfollowers(userId2,s2);
 			return ok();
 		}
 	}
@@ -296,8 +295,8 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 
 			Profile u1 = p1.value();
 			Profile u2 = p2.value();
-			Set<String> s1 = getfollowing(u1.getUserId()).value();
-			Set<String> s2 = getfollowers(u2.getUserId()).value();
+			Set<String> s1 = getfollowing(userId1).value();
+			Set<String> s2 = getfollowers(userId2).value();
 
 			if (s1 == null || s2 == null)
 				return error(NOT_FOUND);
@@ -373,7 +372,8 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).setfollowing(userId,following);
 		} else {
 			if (users.get(userId) != null) {
-				this.following.replace(userId, following);
+				if (this.following.containsKey(userId))
+						this.following.put(userId, following);
 				return ok();
 			} else
 				return error(NOT_FOUND);
@@ -387,7 +387,8 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).setfollowers(userId,followers);
 		} else {
 			if (users.get(userId) != null) {
-				this.followers.replace(userId, followers);
+				if (this.followers.containsKey(userId))
+					this.followers.put(userId, followers);
 				return ok();
 			} else
 				return error(NOT_FOUND);
