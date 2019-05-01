@@ -271,20 +271,16 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				cli.setfollowers(userId2,s2);
 				return ok();
 
-
 			}
 			else {
 				Profiles cli1 = ClientFactory.getProfilesClient(aux[loc1]);
 				Profiles cli2 = ClientFactory.getProfilesClient(aux[loc2]);
-
-				
 
 				Result<Profile> p1 = cli1.getProfile(userId1);
 				Result<Profile> p2 = cli2.getProfile(userId2);
 				
 				if (!p1.isOK() || !p2.isOK())
 					return error(NOT_FOUND);
-
 
 				Set<String> s1 = cli1.getfollowing(userId1).value();
 				Set<String> s2 = cli2.getfollowers(userId2).value();
@@ -328,8 +324,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			if (!p1.isOK() || !p2.isOK())
 				return error(NOT_FOUND);
 
-			Profile u1 = p1.value();
-			Profile u2 = p2.value();
 			Set<String> s1 = getfollowing(userId1).value();
 			Set<String> s2 = getfollowers(userId2).value();
 
