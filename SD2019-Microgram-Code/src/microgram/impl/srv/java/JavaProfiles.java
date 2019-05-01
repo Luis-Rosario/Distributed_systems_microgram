@@ -10,8 +10,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,11 +21,9 @@ import kakfa.KafkaPublisher;
 import kakfa.KafkaSubscriber;
 import kakfa.KafkaUtils;
 import microgram.api.Profile;
-import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.impl.clt.java.ClientFactory;
-import microgram.impl.clt.rest.RestProfilesClient;
 import microgram.impl.srv.rest.ProfilesRestServer;
 import microgram.impl.srv.rest.RestResource;
 
@@ -72,10 +68,10 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		if (n > 1) {
 			try {
 				long start = System.currentTimeMillis();
-				// System.err.println(" n = " + n);
+				
 				for (;;) {
 					aux = Discovery.findUrisOf(ProfilesRestServer.SERVICE, n);
-					// System.err.println("DISCOVERY AGAIN -> " + aux);
+					
 
 					if (System.currentTimeMillis() - start < 20000) {
 						if (aux != null) {
@@ -87,16 +83,14 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 					}
 
 				}
-				// System.err.println("OUT OF CYCLE");
+				
 				Arrays.sort(aux);
 				for (int i = 0; i < aux.length; i++) {
 					if (aux[i].toString().equals(server_uri)) // verificar se o equals funciona
 						myN = i;
 
 				}
-				//System.err.println("Crise ident?: " + myN);
-				//for (URI a : aux)
-				//System.err.println(" URI -> " + a.toString());
+				
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -111,8 +105,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	@Override
 	public Result<Profile> getProfile(String userId) {
 		int pos = resourceServerLocation(userId);
-		// System.err.println("POS = " + pos + " //// myN -> " + myN + " ///////////////
-		// NAME-> " + userId);
 		if (pos != myN) {
 			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).getProfile(userId);
 
@@ -375,40 +367,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		}
 	}
 
-
-	private void listen() {
-		List<String> topics = Arrays.asList(JavaPosts.POSTS_EVENTS);
-
-		KafkaSubscriber subscriber = new KafkaSubscriber(topics);
-
-		subscriber.consume((topic, key, value) -> {
-			Profile p = null;
-			switch (key) {
-			case "DELETEPOSTUSER":
-				p = getProfile(value).value();
-				p.setPosts(p.getPosts() - 1);
-				break;
-			case "CREATEPOST":
-				p = getProfile(value).value();
-				p.setPosts(p.getPosts() + 1);
-				break;
-			}
-		});
-	}
-
-	private int resourceServerLocation(String id) {
-		if (isPartition)
-			return Math.abs(id.hashCode() % aux.length);
-		else
-			return myN;
-
-	}
-
-
-
-
-
-
 	@Override
 	public Result<Void> setfollowing(String userId,Set<String> following) {
 		int pos = resourceServerLocation(userId);
@@ -439,6 +397,33 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		}
 	}
 
+	private void listen() {
+		List<String> topics = Arrays.asList(JavaPosts.POSTS_EVENTS);
+
+		KafkaSubscriber subscriber = new KafkaSubscriber(topics);
+
+		subscriber.consume((topic, key, value) -> {
+			Profile p = null;
+			switch (key) {
+			case "DELETEPOSTUSER":
+				p = getProfile(value).value();
+				p.setPosts(p.getPosts() - 1);
+				break;
+			case "CREATEPOST":
+				p = getProfile(value).value();
+				p.setPosts(p.getPosts() + 1);
+				break;
+			}
+		});
+	}
+
+	private int resourceServerLocation(String id) {
+		if (isPartition)
+			return Math.abs(id.hashCode() % aux.length);
+		else
+			return myN;
+
+	}
 
 
 }
