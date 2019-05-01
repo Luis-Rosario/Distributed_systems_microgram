@@ -1,5 +1,6 @@
 package microgram.impl.srv.rest;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,13 +29,27 @@ public class ProfilesRestServer {
 	public static void main(String[] args) throws Exception {
 
 		Log.setLevel( Level.FINER );
-
+		int n = -1;
+		for(int i = 0; i< args.length; i++) {
+			if(args[i].equals("-profiles")) {
+				n = Integer.parseInt(args[++i]);
+				System.err.println("wrwerwe");
+			}	
+			System.err.println("indx:"+ i +"-> " +args[i]);
+		}
+		
 		String ip = IP.hostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
 		
 		ResourceConfig config = new ResourceConfig();
-
-		config.register(new RestProfilesResources(serverURI));
+		
+		
+		
+		if ( n == -1)
+		config.register(new RestProfilesResources(serverURI));  
+		else
+		config.register(new RestProfilesResources(serverURI , n)); 
+		
 		config.register(new GenericExceptionMapper());
 		config.register(new PrematchingRequestFilter());
 		
@@ -42,6 +57,7 @@ public class ProfilesRestServer {
 
 		Log.info(String.format("%s Server ready @ %s\n",  SERVICE, serverURI));
 		
+		 System.err.println("n = " + n);
 		Discovery.announce(SERVICE, serverURI);
 	}
 }

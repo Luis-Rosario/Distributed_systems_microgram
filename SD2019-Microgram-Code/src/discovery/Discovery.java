@@ -36,7 +36,7 @@ public class Discovery {
 	// The pre-aggreed multicast endpoint assigned to perform discovery. 
 	static final InetSocketAddress DISCOVERY_ADDR = new InetSocketAddress("226.226.226.226", 2266);
 	static final int DISCOVERY_PERIOD = 1000;
-	static final int DISCOVERY_TIMEOUT = 5000;
+	static final int DISCOVERY_TIMEOUT = 10000;
 
 	// Used separate the two fields that make up a service announcement.
 	private static final String DELIMITER = "\t";

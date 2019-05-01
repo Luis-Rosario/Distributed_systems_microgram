@@ -18,6 +18,10 @@ public class RestProfilesResources extends RestResource implements RestProfiles 
 		this.impl = new JavaProfiles();
 		this.baseUri = serverUri + RestProfiles.PATH;
 	}
+	public RestProfilesResources(String serverUri , int n) {
+		this.impl = new JavaProfiles(n , serverUri);
+		this.baseUri = serverUri + RestProfiles.PATH;
+	}
 
 	@Override
 	public Profile getProfile(String userId) {

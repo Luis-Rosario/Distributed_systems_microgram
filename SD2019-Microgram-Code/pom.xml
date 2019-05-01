@@ -82,11 +82,6 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>sd2019</groupId>
-			<artifactId>sd19-tp1-api</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 		</dependency>
@@ -110,6 +105,11 @@
 			<groupId>javax.activation</groupId>
 			<artifactId>activation</artifactId>
 			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>2.2.0</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -139,6 +139,16 @@
 				<artifactId>jersey-media-json-jackson</artifactId>
 				<version>2.25.1</version>
 			</dependency>
+			 <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-api</artifactId>
+       <version>1.7.5</version>
+   </dependency>
+   <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-log4j12</artifactId>
+       <version>1.7.5</version>
+   </dependency>
 		</dependencies>
 	</dependencyManagement>
 </project>

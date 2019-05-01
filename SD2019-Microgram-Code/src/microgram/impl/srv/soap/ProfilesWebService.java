@@ -4,13 +4,15 @@ package microgram.impl.srv.soap;
 import java.util.List;
 import java.util.Set;
 
+import javax.jws.WebService;
+
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.soap.MicrogramException;
 import microgram.api.soap.SoapProfiles;
 import microgram.impl.srv.java.JavaProfiles;
 
-
+@WebService(serviceName=SoapProfiles.NAME, targetNamespace=SoapProfiles.NAMESPACE, endpointInterface=SoapProfiles.INTERFACE)
 public class ProfilesWebService extends SoapService implements SoapProfiles {
 
 	final Profiles impl;
