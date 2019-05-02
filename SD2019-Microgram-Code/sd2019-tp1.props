@@ -13,11 +13,9 @@ posts-soap-service-mainclass=microgram.impl.srv.soap.PostsSoapServer
 posts-soap-service-port=8877
 
 profiles-soap-service-mainclass=microgram.impl.srv.soap.ProfilesSoapServer
-<<<<<<< HEAD
-profiles-soap-service-port=7778
-=======
+
 profiles-soap-service-port=8887
->>>>>>> branch 'master' of https://github.com/Luis-Rosario/SD_Project.git
+
 
 discovery-multicast-address=226.226.226.226:2266
 
