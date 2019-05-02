@@ -90,19 +90,31 @@ public class SoapProfilesClient extends SoapClient implements Profiles {
 	}
 
 	@Override
-	public Result<Void> setfollowing(String userId, Set<String> following) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Result<Void> setfollowers(String userId, Set<String> followers) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Result<List<Profile>> localsearch(String prefix) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Result<Boolean> addfollower(String userId1, String userId2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Result<Boolean> removefollower(String userId1, String userId2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Result<Boolean> addfollowing(String userId1, String userId2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Result<Boolean> removefollowing(String userId1, String userId2) {
 		// TODO Auto-generated method stub
 		return null;
 	}

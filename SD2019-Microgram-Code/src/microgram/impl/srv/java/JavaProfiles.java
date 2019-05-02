@@ -128,8 +128,8 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				return error(CONFLICT);
 			}
 
-			followers.put(profile.getUserId(),  new HashSet<>());
-			following.put(profile.getUserId(),  new HashSet<>());
+			followers.put(profile.getUserId(),  ConcurrentHashMap.newKeySet());
+			following.put(profile.getUserId(),   ConcurrentHashMap.newKeySet());
 			kafka.publish(PROFILES_EVENTS, ProfilesEventKeys.SUCCESS.name(), profile.getPhotoUrl());
 			return ok();
 		} else {
@@ -205,6 +205,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	
 	@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
+		System.err.println("====================================== follow -> " + userId1 + " ;" + userId2 + "; " +  isFollowing + ";"+ isPartition);
 		if (!isPartition) {
 			Set<String> s1 = following.get(userId1);
 			Set<String> s2 = followers.get(userId2);
@@ -239,130 +240,37 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				return error(NOT_FOUND);
 
 		
-			Set<String> s1 = getfollowing(userId1).value();
-			Set<String> s2 = getfollowers(userId2).value();
+//			Set<String> s1 = getfollowing(userId1).value();
+//			Set<String> s2 = getfollowers(userId2).value();
 
 			
 			if (isFollowing) {
-				System.err.println("s1 has s2?: " + s1.contains(userId2));
-				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
-				System.err.println("now?: " + s1.contains(userId2));
+//				System.err.println("s1 has s2?: " + s1.contains(userId2));
+//				System.err.println("s2 has s1?: " + s2.contains(userId1));
+//				
+//				System.err.print("s1 -> " + userId1 + " -> ");
+//				for (String s : s1)
+//					System.err.print(s + ";");
+//				System.err.println();
+//				System.err.print("s2 ->" + userId2 + " -> ");
+//				for (String s : s2)
+//					System.err.print(s + ";");
+//				System.err.println();
+				boolean added1 = addfollowing(userId1,userId2).value(), added2 = addfollower(userId2,userId1).value();
+				//System.err.println("now?: " + s1.contains(userId2));
 				if (!added1 || !added2)
 					return error(CONFLICT);
 
 				
 			} else {
-				boolean removed1 = s1.remove(userId2), removed2 = s2.remove(userId1);
+				boolean removed1 =removefollowing(userId1,userId2).value(), removed2 = removefollower(userId2,userId1).value();
 				if (!removed1 || !removed2)
 					return error(NOT_FOUND);
 				
 			}
-			// set+
-			setfollowing(userId1,s1);
-			setfollowers(userId2,s2);
 			return ok();
 		}
 	}
-
-	/*@Override
-	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
-		if (!isPartition) {
-			Set<String> s1 = following.get(userId1);
-			Set<String> s2 = followers.get(userId2);
-			Profile u1 = users.get(userId1);
-			Profile u2 = users.get(userId2);
-
-			if (s1 == null || s2 == null)
-				return error(NOT_FOUND);
-
-			if (isFollowing) {
-
-				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
-
-				if (!added1 || !added2)
-					return error(CONFLICT);
-				u1.setFollowing(u1.getFollowing() - 1);
-				u2.setFollowers(u2.getFollowers() - 1);
-			} else {
-				boolean removed1 = s1.remove(userId2), removed2 = s2.remove(userId1);
-				if (!removed1 || !removed2)
-					return error(NOT_FOUND);
-				u1.setFollowing(u1.getFollowing() + 1);
-				u2.setFollowers(u2.getFollowers() + 1);
-			}
-			return ok();
-		} else {
-
-			int loc1 = resourceServerLocation(userId1);
-			int loc2 = resourceServerLocation(userId2);
-
-			if(loc1 == loc2) {
-				Profiles cli = ClientFactory.getProfilesClient(aux[loc1]);
-
-				Result<Profile> p1 = cli.getProfile(userId1);
-				Result<Profile> p2 = cli.getProfile(userId2);
-
-				if (!p1.isOK() || !p2.isOK())
-					return error(NOT_FOUND);
-
-
-				Set<String> s1 = cli.getfollowing(userId1).value();
-				Set<String> s2 = cli.getfollowers(userId2).value();
-
-				if (isFollowing) {
-					System.err.println("s1 has s2?: " + s1.contains(userId2));
-					boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
-					System.err.println("now?: " + s1.contains(userId2));
-					if (!added1 || !added2)
-						return error(CONFLICT);
-
-
-				} else {
-					boolean removed1 = s1.remove(userId2), removed2 = s2.remove(userId1);
-					if (!removed1 || !removed2)
-						return error(NOT_FOUND);
-
-				}
-				// set+
-				cli.setfollowing(userId1,s1);
-				cli.setfollowers(userId2,s2);
-				return ok();
-
-			}
-			else {
-				Profiles cli1 = ClientFactory.getProfilesClient(aux[loc1]);
-				Profiles cli2 = ClientFactory.getProfilesClient(aux[loc2]);
-
-				Result<Profile> p1 = cli1.getProfile(userId1);
-				Result<Profile> p2 = cli2.getProfile(userId2);
-				
-				if (!p1.isOK() || !p2.isOK())
-					return error(NOT_FOUND);
-
-				Set<String> s1 = cli1.getfollowing(userId1).value();
-				Set<String> s2 = cli2.getfollowers(userId2).value();
-
-				if (isFollowing) {
-					System.err.println("s1 has s2?: " + s1.contains(userId2));
-					boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
-					System.err.println("now?: " + s1.contains(userId2));
-					if (!added1 || !added2)
-						return error(CONFLICT);
-
-
-				} else {
-					boolean removed1 = s1.remove(userId2), removed2 = s2.remove(userId1);
-					if (!removed1 || !removed2)
-						return error(NOT_FOUND);
-
-				}
-				// set+
-				cli1.setfollowing(userId1,s1);
-				cli2.setfollowers(userId2,s2);
-				return ok();
-			}
-		}
-	}*/
 
 	@Override
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
@@ -419,34 +327,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		}
 	}
 
-	@Override
-	public Result<Void> setfollowing(String userId,Set<String> following) {
-		int pos = resourceServerLocation(userId);
-		if (pos != myN && aux.length > 1) {
-			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).setfollowing(userId,following);
-		} else {
-			if (users.get(userId) != null) {
-				this.following.put(userId, following);
-				return ok();
-			} else
-				return error(NOT_FOUND);
-		}
-	}
-
-	@Override
-	public Result<Void> setfollowers(String userId,Set<String> followers) {
-		int pos = resourceServerLocation(userId);
-		if (pos != myN && aux.length > 1) {
-			return ClientFactory.getProfilesClient(aux[resourceServerLocation(userId)]).setfollowers(userId,followers);
-		} else {
-			if (users.get(userId) != null) {
-				this.followers.put(userId, followers);
-				return ok();
-			} else
-				return error(NOT_FOUND);
-		}
-	}
-
 	private void listen() {
 		List<String> topics = Arrays.asList(JavaPosts.POSTS_EVENTS);
 
@@ -473,6 +353,49 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		else
 			return myN;
 
+	}
+
+	@Override
+	public Result<Boolean> addfollower(String userId1, String userId2) {
+		int pos = resourceServerLocation(userId1);
+		if (pos != myN && aux.length > 1) {
+			return ClientFactory.getProfilesClient(aux[pos]).addfollower(userId1,userId2);
+		} else {
+				return ok(followers.get(userId1).add(userId2));
+	
+		}
+	}
+
+	@Override
+	public Result<Boolean> removefollower(String userId1, String userId2) {
+		int pos = resourceServerLocation(userId1);
+		if (pos != myN && aux.length > 1) {
+			return ClientFactory.getProfilesClient(aux[pos]).removefollower(userId1,userId2);
+		} else {
+				
+				return ok(followers.get(userId1).remove(userId2));
+		}
+	}
+
+	@Override
+	public Result<Boolean> addfollowing(String userId1, String userId2) {
+		int pos = resourceServerLocation(userId1);
+		if (pos != myN && aux.length > 1) {
+			return ClientFactory.getProfilesClient(aux[pos]).addfollowing(userId1,userId2);
+		} else {
+				return ok(following.get(userId1).add(userId2));
+		}
+	}
+
+	@Override
+	public Result<Boolean> removefollowing(String userId1, String userId2) {
+		int pos = resourceServerLocation(userId1);
+		if (pos != myN && aux.length > 1) {
+			return ClientFactory.getProfilesClient(aux[pos]).removefollowing(userId1,userId2);
+		} else {
+				return ok(following.get(userId1).remove(userId2));
+	
+		}
 	}
 
 

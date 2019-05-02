@@ -55,18 +55,29 @@ public class RetryProfilesClient extends RetryClient implements Profiles {
 		return reTry( () -> impl.getfollowers(userId));
 	}
 
-	@Override
-	public Result<Void> setfollowing(String userId, Set<String> following) {
-		return reTry( () -> impl.setfollowing(userId,  following));
-	}
-
-	@Override
-	public Result<Void> setfollowers(String userId, Set<String> followers) {
-		return reTry( () -> impl.setfollowers(userId,followers));
-	}
 
 	@Override
 	public Result<List<Profile>> localsearch(String prefix) {
 		return reTry( () -> impl.localsearch(prefix));
+	}
+
+	@Override
+	public Result<Boolean> addfollower(String userId1, String userId2) {
+		return reTry( () -> impl.addfollower(userId1,userId2));
+	}
+
+	@Override
+	public Result<Boolean> removefollower(String userId1, String userId2) {
+		return reTry( () -> impl.removefollower(userId1,userId2));
+	}
+
+	@Override
+	public Result<Boolean> addfollowing(String userId1, String userId2) {
+		return reTry( () -> impl.addfollowing(userId1,userId2));
+	}
+
+	@Override
+	public Result<Boolean> removefollowing(String userId1, String userId2) {
+		return reTry( () -> impl.removefollowing(userId1,userId2));
 	}
 }

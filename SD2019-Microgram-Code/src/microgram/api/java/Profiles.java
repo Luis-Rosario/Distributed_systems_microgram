@@ -69,11 +69,11 @@ public interface Profiles {
 	 * @return (OK,Set<String>), NOT_FOUND if the user does not exist
 	 */
 	Result<Set<String>> getfollowing(String userId);
-	
-	Result<Void> setfollowing(String userId , Set<String> following);
-	
-	
 	Result<Set<String>> getfollowers(String userId);
 	
-	Result<Void> setfollowers(String userId,Set<String> followers);
+	Result<Boolean> addfollower(String userId1 , String userId2);
+	Result<Boolean> removefollower(String userId1 , String userId2);
+	Result<Boolean> addfollowing(String userId1 , String userId2);
+	Result<Boolean> removefollowing(String userId1 , String userId2);
+	
 }

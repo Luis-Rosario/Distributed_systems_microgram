@@ -68,11 +68,21 @@ public class RestProfilesResources extends RestResource implements RestProfiles 
 		return super.resultOrThrow( impl.localsearch(name));
 	}
 	@Override
-	public void setfollowing(String userId, Set<String> following) {
-		super.resultOrThrow( impl.setfollowing(userId,following));
+	public boolean addfollower(String userId1, String userId2) {
+		return super.resultOrThrow( impl.addfollower(userId1, userId2));		
 	}
 	@Override
-	public void setfollowers(String userId, Set<String> followers) {
-		super.resultOrThrow( impl.setfollowers(userId,followers));
-	}	
+	public boolean removefollower(String userId1, String userId2) {
+		return super.resultOrThrow( impl.removefollower(userId1, userId2));			
+	}
+	@Override
+	public boolean addfollowing(String userId1, String userId2) {
+		return super.resultOrThrow( impl.addfollowing(userId1, userId2));			
+	}
+	@Override
+	public boolean removefollowing(String userId1, String userId2) {
+		return super.resultOrThrow( impl.removefollowing(userId1, userId2));			
+	}
+
+	
 }

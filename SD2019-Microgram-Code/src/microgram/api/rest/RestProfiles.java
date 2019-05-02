@@ -67,15 +67,28 @@ public interface RestProfiles {
 	@GET
 	@Path("/getfollowers/{userId}")
 	Set<String> getfollowers(@PathParam ("userId") String userId);
+		
+	@PUT
+	@Path("/addfollower/{userId1}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	boolean addfollower(@PathParam ("userId1") String userId1 ,String userId2);
 	
 	@PUT
-	@Path("/setfollowing/{userId}")
+	@Path("/removefollower/{userId1}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	void setfollowing(@PathParam ("userId") String userId, Set<String> following);
+	@Produces(MediaType.APPLICATION_JSON)
+	boolean removefollower(@PathParam ("userId1") String userId1 , String userId2);
 	
 	@PUT
-	@Path("/setfollowers/{userId}")
+	@Path("/addfollowing/{userId1}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	void setfollowers(@PathParam ("userId") String userId , Set<String> followers);
+	@Produces(MediaType.APPLICATION_JSON)
+	boolean addfollowing(@PathParam ("userId1") String userId1 ,String userId2);
 	
+	@PUT
+	@Path("/removefollowing/{userId1}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	boolean removefollowing(@PathParam ("userId1") String userId1 , String userId2);
 }
