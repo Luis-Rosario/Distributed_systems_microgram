@@ -24,7 +24,7 @@ public class JavaMedia implements Media {
 	private static final String MEDIA_EXTENSION = ".jpg";
 	private static final String ROOT_DIR = "/tmp/microgram/";
 	private static  final long MIN = 60000;
-	private static String SERVICE = "Microgram-MediaStorage";
+	public static String SERVICE = "Microgram-MediaStorage";
 	public static final String MEDIA_STORAGE_EVENTS = "Microgram-MediaStorageEvents";
 
 	enum MediaEventKeys {
@@ -36,9 +36,7 @@ public class JavaMedia implements Media {
 
 	public JavaMedia() {
 		new File(ROOT_DIR).mkdirs();
-
 		this.kafka = new KafkaPublisher();
-
 		KafkaUtils.createTopics(Arrays.asList(JavaMedia.MEDIA_STORAGE_EVENTS));
 
 		new Thread(() -> {
@@ -47,7 +45,6 @@ public class JavaMedia implements Media {
 		new Thread(() -> {
 			listenToSuccessPosts();
 		}).start();
-
 		new Thread(() ->  {
 			for(;;) {
 				try {
@@ -122,35 +119,37 @@ public class JavaMedia implements Media {
 		}
 	}
 
+	/**
+	 *	Method that listens to a profile kafka event that indicates a successful profile creation and results in JavaMedia removing the corresponding resource id from the cache
+	 */
 	private  void listenToSuccessProfiles() {
 		List<String> topics = Arrays.asList(JavaProfiles.PROFILES_EVENTS);
-
 		KafkaSubscriber subscriber = new KafkaSubscriber(topics);
-
 		subscriber.consume((topic, key, value) -> {	
 			switch (key) {
 			case "SUCCESS":
 				removeFromCache(value);
 			}
-
 		});
-
 	}
 
+	/**
+	 *	Method that listens to a profile kafka event that indicates a successful post creation and results in JavaMedia removing the corresponding resource id from the cache
+	 */
 	private  void listenToSuccessPosts() {
 		List<String> topics = Arrays.asList(JavaPosts.POSTS_EVENTS);
-
 		KafkaSubscriber subscriber = new KafkaSubscriber(topics);
-
 		subscriber.consume((topic, key, value) -> {	
 			switch (key) {
 			case "SUCCESS":
 				removeFromCache(value);
 			}
-
 		});
 	}
 
+	/**
+	 * Method that checks the cache periodical searching for entries not acknowledged which might mean that an error occurred and they must be deleted from the system
+	 */
 	private void updateCache() { 
 		for (String key:eventCache.keySet()) {
 			long eventTime= eventCache.get(key);
@@ -160,6 +159,10 @@ public class JavaMedia implements Media {
 		}
 	}
 
+	/**
+	 * Method that removes the corresponding id entry from the cache
+	 * @param id the entry(resource) id
+	 */
 	private void removeFromCache(String id) {
 		eventCache.remove(id);
 	}

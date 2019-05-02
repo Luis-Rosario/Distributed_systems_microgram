@@ -1,16 +1,14 @@
 package microgram.impl.srv.rest;
 
-import java.io.IOException;
+
 import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-
 import discovery.Discovery;
 import microgram.impl.srv.rest.utils.GenericExceptionMapper;
-import microgram.impl.srv.rest.utils.PrematchingRequestFilter;
+
 import utils.IP;
 
 

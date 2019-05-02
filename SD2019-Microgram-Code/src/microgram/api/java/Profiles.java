@@ -39,8 +39,8 @@ public interface Profiles {
 	 * @return result of (OK, List<Profile>); an empty list if the search yields no profiles
 	 */
 	Result<List<Profile>> search( String prefix );
-	
-	
+
+
 	Result<List<Profile>> localsearch( String prefix );
 
 	/**
@@ -62,18 +62,50 @@ public interface Profiles {
 	 */
 	Result<Boolean> isFollowing( String userId1, String userId2);
 
-
 	/**
 	 * Returns a set with the id's of the users the user follows
-	 * @param userId the user 
+	 * @param userId the user that follows
 	 * @return (OK,Set<String>), NOT_FOUND if the user does not exist
 	 */
 	Result<Set<String>> getfollowing(String userId);
+
+	/**
+	 *  Returns a set with the id's of the users that follow a given user
+	 * @param userId the user to be followed
+	 * @return  (OK,Set<String>), NOT_FOUND if the user does not exist
+	 */
 	Result<Set<String>> getfollowers(String userId);
-	
+
+	/**
+	 * Checks if a given user is following another, and follows him if it wasn't already
+	 * @param userId1 the user to be followed
+	 * @param userId2 the user that follows
+	 * @return (OK,Boolean), NOT_FOUND if the user does not exist
+	 */
 	Result<Boolean> addfollower(String userId1 , String userId2);
+
+	/**
+	 * Checks if a given user is following another, and unfollows him if he was
+	 * @param userId1 the user that is followed
+	 * @param userId2 the user that is following
+	 * @return (OK,Boolean), NOT_FOUND if the user does not exist
+	 */
 	Result<Boolean> removefollower(String userId1 , String userId2);
+
+	/**
+	 * Checks if a given user is following another, and follows him if it wasn't already
+	 * @param userId1 the user that follows
+	 * @param userId2 the user to be followed
+	 * @return (OK,Boolean), NOT_FOUND if the user does not exist
+	 */
 	Result<Boolean> addfollowing(String userId1 , String userId2);
+
+	/**
+	 * Checks if a given user is following another, and unfollows him if he was
+	 * @param userId1 the user that is following		
+	 * @param userId2 the user that is followed
+	 * @return (OK,Boolean), NOT_FOUND if the user does not exist
+	 */
 	Result<Boolean> removefollowing(String userId1 , String userId2);
-	
+
 }

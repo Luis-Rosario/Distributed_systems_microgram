@@ -28,14 +28,14 @@ public class RestProfilesClient extends RestClient implements Profiles {
 
 	public RestProfilesClient(URI serverUri) {
 		super(serverUri, RestProfiles.PATH);
-		// System.err.println(serverUri + " <-- URI");
+		
 	}
 
 	@Override
 	public Result<Profile> getProfile(String userId) {
 		Response r = target.path(userId).request().accept(MediaType.APPLICATION_JSON).get();
 
-		// System.err.println(r);
+		
 		return super.responseContents(r, Status.OK, new GenericType<Profile>() {
 		});
 	}
@@ -44,7 +44,7 @@ public class RestProfilesClient extends RestClient implements Profiles {
 	public Result<Void> createProfile(Profile profile) {
 		Response r = target.request().post(Entity.entity(profile, MediaType.APPLICATION_JSON));
 
-		// System.err.println(r);
+	
 		return super.verifyResponse(r, Status.NO_CONTENT);
 	}
 

@@ -208,6 +208,9 @@ public class JavaPosts implements Posts {
 
 	}
 
+	/**
+	 * Method that listens for profile kafka event Delete profile to delete the deleted user's posts and remove his likes from photos
+	 */
 	private void listen() {
 		List<String> topics = Arrays.asList(JavaProfiles.PROFILES_EVENTS);
 
@@ -235,10 +238,4 @@ public class JavaPosts implements Posts {
 		});
 	}
 	
-	private int resourceServerLocation(String id, int n) {
-		//System.err.println("id: " + id +"->" + Math.abs(id.hashCode() %  aux.length));
-		return Math.abs(id.hashCode() %  n);
-		
-	}
-
 }

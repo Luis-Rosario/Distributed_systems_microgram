@@ -30,8 +30,7 @@ public class SoapProfilesClient extends SoapClient implements Profiles {
     }
 
 	public SoapProfilesClient(URI serverUri) {
-		super(serverUri);
-		
+		super(serverUri);	
 	}
 
 	@Override
@@ -83,6 +82,9 @@ public class SoapProfilesClient extends SoapClient implements Profiles {
 		return impl;
     }
 
+	
+//*********************Distribution related methods NOT_IMPLEMENTED****************************/	
+	
 	@Override
 	public Result<Set<String>> getfollowers(String userId) {
 		// TODO Auto-generated method stub

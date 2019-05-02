@@ -10,13 +10,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
 import discovery.Discovery;
 import kakfa.KafkaPublisher;
 import kakfa.KafkaSubscriber;
@@ -30,24 +28,22 @@ import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles extends RestResource implements microgram.api.java.Profiles {
 	public static String SERVICE = "Microgram-Profiles";
+	public static final String PROFILES_EVENTS = "Microgram-ProfilesEvents";
 
 	protected Map<String, Profile> users = new ConcurrentHashMap<>();
 	protected Map<String, Set<String>> followers = new ConcurrentHashMap<>();
 	protected Map<String, Set<String>> following = new ConcurrentHashMap<>();
-
 	protected Profiles profilesClient = null;
-
-	public static final String PROFILES_EVENTS = "Microgram-ProfilesEvents";
 
 	private int myN = 0;
 	private boolean isPartition;
 	private URI[] aux;
 
+	final KafkaPublisher kafka;
+
 	enum ProfilesEventKeys {
 		DELETEPROFILE, SUCCESS
 	};
-
-	final KafkaPublisher kafka;
 
 	public JavaProfiles() {
 		this.kafka = new KafkaPublisher();
@@ -71,7 +67,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				long start = System.currentTimeMillis();
 				for (;;) {
 					aux = Discovery.findUrisOf(ProfilesRestServer.SERVICE, n);
-					
+
 					if (System.currentTimeMillis() - start < 20000) {
 						if (aux != null) {
 							if (aux.length == n)
@@ -80,12 +76,10 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 					} else {
 						throw new IOException();
 					}
-
 				}
-				
 				Arrays.sort(aux);
 				for (int i = 0; i < aux.length; i++) {
-					if (aux[i].toString().equals(server_uri)) // verificar se o equals funciona
+					if (aux[i].toString().equals(server_uri)) 
 						myN = i;
 
 				}
@@ -117,8 +111,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		}
 	}
 
-
-
 	@Override
 	public Result<Void> createProfile(Profile profile) {
 		int pos = resourceServerLocation(profile.getUserId());
@@ -127,7 +119,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			if (res != null) {
 				return error(CONFLICT);
 			}
-
 			followers.put(profile.getUserId(),  ConcurrentHashMap.newKeySet());
 			following.put(profile.getUserId(),   ConcurrentHashMap.newKeySet());
 			kafka.publish(PROFILES_EVENTS, ProfilesEventKeys.SUCCESS.name(), profile.getPhotoUrl());
@@ -172,7 +163,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				return error(NOT_FOUND);
 			}
 		}
-
 	}
 
 	@Override
@@ -202,10 +192,10 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	public Result<List<Profile>> localsearch(String prefix) {
 		return ok(users.values().stream().filter(p -> p.getUserId().startsWith(prefix)).collect(Collectors.toList()));
 	}
-	
+
 	@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
-		System.err.println("====================================== follow -> " + userId1 + " ;" + userId2 + "; " +  isFollowing + ";"+ isPartition);
+
 		if (!isPartition) {
 			Set<String> s1 = following.get(userId1);
 			Set<String> s2 = followers.get(userId2);
@@ -216,9 +206,9 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				return error(NOT_FOUND);
 
 			if (isFollowing) {
-				
+
 				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
-				
+
 				if (!added1 || !added2)
 					return error(CONFLICT);
 				u1.setFollowing(u1.getFollowing() - 1);
@@ -232,41 +222,24 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			}
 			return ok();
 		} else {
-			
+
 			Result<Profile> p1 = getProfile(userId1);
 			Result<Profile> p2 = getProfile(userId2);
 
 			if (!p1.isOK() || !p2.isOK())
 				return error(NOT_FOUND);
 
-		
-//			Set<String> s1 = getfollowing(userId1).value();
-//			Set<String> s2 = getfollowers(userId2).value();
-
-			
 			if (isFollowing) {
-//				System.err.println("s1 has s2?: " + s1.contains(userId2));
-//				System.err.println("s2 has s1?: " + s2.contains(userId1));
-//				
-//				System.err.print("s1 -> " + userId1 + " -> ");
-//				for (String s : s1)
-//					System.err.print(s + ";");
-//				System.err.println();
-//				System.err.print("s2 ->" + userId2 + " -> ");
-//				for (String s : s2)
-//					System.err.print(s + ";");
-//				System.err.println();
 				boolean added1 = addfollowing(userId1,userId2).value(), added2 = addfollower(userId2,userId1).value();
-				//System.err.println("now?: " + s1.contains(userId2));
+
 				if (!added1 || !added2)
 					return error(CONFLICT);
 
-				
 			} else {
 				boolean removed1 =removefollowing(userId1,userId2).value(), removed2 = removefollower(userId2,userId1).value();
 				if (!removed1 || !removed2)
 					return error(NOT_FOUND);
-				
+
 			}
 			return ok();
 		}
@@ -312,8 +285,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		}
 	}
 
-
-
 	@Override
 	public Result<Set<String>> getfollowers(String userId) {
 		int pos = resourceServerLocation(userId);
@@ -327,6 +298,52 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		}
 	}
 
+	@Override
+	public Result<Boolean> addfollower(String userId1, String userId2) {
+		int pos = resourceServerLocation(userId1);
+		if (pos != myN && aux.length > 1) {
+			return ClientFactory.getProfilesClient(aux[pos]).addfollower(userId1,userId2);
+		} else {
+			return ok(followers.get(userId1).add(userId2));
+
+		}
+	}
+
+	@Override
+	public Result<Boolean> removefollower(String userId1, String userId2) {
+		int pos = resourceServerLocation(userId1);
+		if (pos != myN && aux.length > 1) {
+			return ClientFactory.getProfilesClient(aux[pos]).removefollower(userId1,userId2);
+		} else {
+
+			return ok(followers.get(userId1).remove(userId2));
+		}
+	}
+
+	@Override
+	public Result<Boolean> addfollowing(String userId1, String userId2) {
+		int pos = resourceServerLocation(userId1);
+		if (pos != myN && aux.length > 1) {
+			return ClientFactory.getProfilesClient(aux[pos]).addfollowing(userId1,userId2);
+		} else {
+			return ok(following.get(userId1).add(userId2));
+		}
+	}
+
+	@Override
+	public Result<Boolean> removefollowing(String userId1, String userId2) {
+		int pos = resourceServerLocation(userId1);
+		if (pos != myN && aux.length > 1) {
+			return ClientFactory.getProfilesClient(aux[pos]).removefollowing(userId1,userId2);
+		} else {
+			return ok(following.get(userId1).remove(userId2));
+
+		}
+	}
+
+	/**
+	 * Method that listens to kafka post events DeletePostuser and Createpost and acts accordingly
+	 */
 	private void listen() {
 		List<String> topics = Arrays.asList(JavaPosts.POSTS_EVENTS);
 
@@ -347,6 +364,11 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		});
 	}
 
+	/**
+	 * Method that indicates the profile server partition where a given profile is located
+	 * @param id the profile id
+	 * @return the corresponding partition index on the URI's array
+	 */
 	private int resourceServerLocation(String id) {
 		if (isPartition)
 			return Math.abs(id.hashCode() % aux.length);
@@ -354,50 +376,5 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			return myN;
 
 	}
-
-	@Override
-	public Result<Boolean> addfollower(String userId1, String userId2) {
-		int pos = resourceServerLocation(userId1);
-		if (pos != myN && aux.length > 1) {
-			return ClientFactory.getProfilesClient(aux[pos]).addfollower(userId1,userId2);
-		} else {
-				return ok(followers.get(userId1).add(userId2));
-	
-		}
-	}
-
-	@Override
-	public Result<Boolean> removefollower(String userId1, String userId2) {
-		int pos = resourceServerLocation(userId1);
-		if (pos != myN && aux.length > 1) {
-			return ClientFactory.getProfilesClient(aux[pos]).removefollower(userId1,userId2);
-		} else {
-				
-				return ok(followers.get(userId1).remove(userId2));
-		}
-	}
-
-	@Override
-	public Result<Boolean> addfollowing(String userId1, String userId2) {
-		int pos = resourceServerLocation(userId1);
-		if (pos != myN && aux.length > 1) {
-			return ClientFactory.getProfilesClient(aux[pos]).addfollowing(userId1,userId2);
-		} else {
-				return ok(following.get(userId1).add(userId2));
-		}
-	}
-
-	@Override
-	public Result<Boolean> removefollowing(String userId1, String userId2) {
-		int pos = resourceServerLocation(userId1);
-		if (pos != myN && aux.length > 1) {
-			return ClientFactory.getProfilesClient(aux[pos]).removefollowing(userId1,userId2);
-		} else {
-				return ok(following.get(userId1).remove(userId2));
-	
-		}
-	}
-
-
 }
 
