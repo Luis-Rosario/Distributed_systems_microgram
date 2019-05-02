@@ -69,11 +69,9 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		if (n > 1) {
 			try {
 				long start = System.currentTimeMillis();
-				
 				for (;;) {
 					aux = Discovery.findUrisOf(ProfilesRestServer.SERVICE, n);
 					
-
 					if (System.currentTimeMillis() - start < 20000) {
 						if (aux != null) {
 							if (aux.length == n)
@@ -91,8 +89,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 						myN = i;
 
 				}
-				
-
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (URISyntaxException e) {
@@ -206,8 +202,69 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	public Result<List<Profile>> localsearch(String prefix) {
 		return ok(users.values().stream().filter(p -> p.getUserId().startsWith(prefix)).collect(Collectors.toList()));
 	}
-
+	
 	@Override
+	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
+		if (!isPartition) {
+			Set<String> s1 = following.get(userId1);
+			Set<String> s2 = followers.get(userId2);
+			Profile u1 = users.get(userId1);
+			Profile u2 = users.get(userId2);
+
+			if (s1 == null || s2 == null)
+				return error(NOT_FOUND);
+
+			if (isFollowing) {
+				
+				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
+				
+				if (!added1 || !added2)
+					return error(CONFLICT);
+				u1.setFollowing(u1.getFollowing() - 1);
+				u2.setFollowers(u2.getFollowers() - 1);
+			} else {
+				boolean removed1 = s1.remove(userId2), removed2 = s2.remove(userId1);
+				if (!removed1 || !removed2)
+					return error(NOT_FOUND);
+				u1.setFollowing(u1.getFollowing() + 1);
+				u2.setFollowers(u2.getFollowers() + 1);
+			}
+			return ok();
+		} else {
+			
+			Result<Profile> p1 = getProfile(userId1);
+			Result<Profile> p2 = getProfile(userId2);
+
+			if (!p1.isOK() || !p2.isOK())
+				return error(NOT_FOUND);
+
+		
+			Set<String> s1 = getfollowing(userId1).value();
+			Set<String> s2 = getfollowers(userId2).value();
+
+			
+			if (isFollowing) {
+				System.err.println("s1 has s2?: " + s1.contains(userId2));
+				boolean added1 = s1.add(userId2), added2 = s2.add(userId1);
+				System.err.println("now?: " + s1.contains(userId2));
+				if (!added1 || !added2)
+					return error(CONFLICT);
+
+				
+			} else {
+				boolean removed1 = s1.remove(userId2), removed2 = s2.remove(userId1);
+				if (!removed1 || !removed2)
+					return error(NOT_FOUND);
+				
+			}
+			// set+
+			setfollowing(userId1,s1);
+			setfollowers(userId2,s2);
+			return ok();
+		}
+	}
+
+	/*@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
 		if (!isPartition) {
 			Set<String> s1 = following.get(userId1);
@@ -271,20 +328,16 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				cli.setfollowers(userId2,s2);
 				return ok();
 
-
 			}
 			else {
 				Profiles cli1 = ClientFactory.getProfilesClient(aux[loc1]);
 				Profiles cli2 = ClientFactory.getProfilesClient(aux[loc2]);
-
-				
 
 				Result<Profile> p1 = cli1.getProfile(userId1);
 				Result<Profile> p2 = cli2.getProfile(userId2);
 				
 				if (!p1.isOK() || !p2.isOK())
 					return error(NOT_FOUND);
-
 
 				Set<String> s1 = cli1.getfollowing(userId1).value();
 				Set<String> s2 = cli2.getfollowers(userId2).value();
@@ -309,7 +362,7 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 				return ok();
 			}
 		}
-	}
+	}*/
 
 	@Override
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
@@ -328,8 +381,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 			if (!p1.isOK() || !p2.isOK())
 				return error(NOT_FOUND);
 
-			Profile u1 = p1.value();
-			Profile u2 = p2.value();
 			Set<String> s1 = getfollowing(userId1).value();
 			Set<String> s2 = getfollowers(userId2).value();
 
