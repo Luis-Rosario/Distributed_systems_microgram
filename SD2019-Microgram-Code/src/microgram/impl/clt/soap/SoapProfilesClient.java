@@ -68,7 +68,7 @@ public class SoapProfilesClient extends SoapClient implements Profiles {
 		 return super.tryCatchResult(() -> this.impl().getfollowing(userId));
 	}
 	
-	private SoapProfiles impl() {
+	private synchronized SoapProfiles impl() {
 		if( impl == null ) {
 			try {
 				QName QNAME = new QName(SoapProfiles.NAMESPACE, SoapProfiles.NAME);		

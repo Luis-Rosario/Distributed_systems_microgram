@@ -55,7 +55,7 @@ implements Posts {
     	 return super.tryCatchResult(() -> this.impl().getFeed(userId));
     }
     
-    private SoapPosts impl() {
+    private synchronized SoapPosts impl() {
     	if( impl == null ) {
 			try {
 				QName QNAME = new QName(SoapPosts.NAMESPACE, SoapPosts.NAME);		
